@@ -194,16 +194,9 @@
                         <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,rgba(252,239,210,0.15)_0%,transparent_70%)]"></div>
                         
                         <!-- Premium Physical Plaque Render -->
-                        <div class="rounded-xl p-6 mb-6 border border-brand-gold/20 shadow-md bg-brand-dark relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
-                            <!-- Real logo image if available -->
-                            <img id="display-profile-pic" src="WhatsApp Image 2026-07-07 at 23.22.44.jpeg" alt="TURRA nails design" class="w-full h-full object-cover rounded-lg hidden absolute inset-0 z-0 opacity-20" onload="this.classList.remove('hidden')" onerror="this.classList.add('hidden')">
-                            
-                            <!-- Pure High-End Typographic Backlit Replica inside the card -->
-                            <div class="relative z-10 flex flex-col items-center justify-center text-center select-none py-6">
-                                <span class="font-turra-serif text-brand-glow text-4xl md:text-5xl font-bold tracking-[0.25em] uppercase leading-none mb-1 backlit-text">TURRA</span>
-                                <div class="w-16 h-[1px] bg-brand-gold/40 my-1"></div>
-                                <span class="font-cursive text-brand-gold text-2xl md:text-3xl tracking-wide">nails design</span>
-                            </div>
+                        <div class="rounded-xl mb-6 border border-brand-gold/20 shadow-md bg-brand-dark relative overflow-hidden min-h-[220px]">
+                            <!-- Foto sem texto por cima -->
+                            <img id="display-profile-pic" src="WhatsApp Image 2026-07-07 at 23.22.44.jpeg" alt="Foto do espaço" class="w-full h-full object-cover rounded-lg hidden absolute inset-0 z-0" onload="this.classList.remove('hidden')" onerror="this.classList.add('hidden')">
                         </div>
 
                         <div class="space-y-2 relative z-10">
@@ -743,8 +736,8 @@
                         </div>
 
                         <div class="space-y-2">
-                            <label for="admin-social-whatsapp" class="block text-xs font-semibold uppercase tracking-wider text-brand-dark">Número do WhatsApp (Apenas Números com DDD, Ex: 5516996269345)</label>
-                            <input type="text" id="admin-social-whatsapp" onchange="updateSocialLink('whatsappNumber', this.value)" class="w-full px-4 py-3 bg-brand-light rounded-xl border border-brand-cream focus:border-brand-gold focus:outline-none text-sm font-medium text-brand-dark" placeholder="5516996269345">
+                            <label for="admin-social-whatsapp" class="block text-xs font-semibold uppercase tracking-wider text-brand-dark">Link do WhatsApp</label>
+                            <input type="url" id="admin-social-whatsapp" onchange="updateSocialLink('whatsappLink', this.value)" class="w-full px-4 py-3 bg-brand-light rounded-xl border border-brand-cream focus:border-brand-gold focus:outline-none text-sm font-medium text-brand-dark" placeholder="https://wa.me/5516996269345">
                         </div>
 
                         <div class="space-y-2">
@@ -797,6 +790,36 @@
         const auth = getAuth(app);
 
         // State Management
+        const DEFAULT_WHATSAPP_LINK = "https://wa.me/5516996269345";
+
+        function extractWhatsAppNumber(value) {
+            return String(value || '').replace(/\D/g, '');
+        }
+
+        function normalizeWhatsAppLink(value) {
+            const raw = String(value || '').trim();
+            if (!raw) return DEFAULT_WHATSAPP_LINK;
+
+            const digits = extractWhatsAppNumber(raw);
+            // Se a profissional digitar apenas o número, convertemos para o link correto.
+            if (!/^https?:\/\//i.test(raw)) {
+                return digits ? `https://wa.me/${digits}` : DEFAULT_WHATSAPP_LINK;
+            }
+
+            // Para links do WhatsApp, mantemos o formato wa.me padronizado para evitar erro no botão e nas mensagens.
+            if (/wa\.me|api\.whatsapp\.com|web\.whatsapp\.com/i.test(raw) && digits) {
+                return `https://wa.me/${digits}`;
+            }
+
+            return raw;
+        }
+
+        function getWhatsAppSendUrl(message) {
+            const baseLink = normalizeWhatsAppLink(appState.whatsappLink || appState.whatsappNumber || DEFAULT_WHATSAPP_LINK).split('?')[0];
+            const encodedText = encodeURIComponent(message);
+            return `${baseLink}?text=${encodedText}`;
+        }
+
         let appState = {
             services: {
                 "1": { name: "Alongamento de Unhas em Gel", price: 180, duration: 150 },
@@ -821,6 +844,7 @@
             cancellationPolicy: "O cancelamento ou reagendamento deve ser feito com até 2 dias de antecedência.",
             instagramLink: "https://instagram.com",
             facebookLink: "https://facebook.com",
+            whatsappLink: DEFAULT_WHATSAPP_LINK,
             whatsappNumber: "5516996269345"
         };
 
@@ -886,7 +910,13 @@
                     if (data.cancellationPolicy !== undefined) appState.cancellationPolicy = data.cancellationPolicy;
                     if (data.instagramLink !== undefined) appState.instagramLink = data.instagramLink;
                     if (data.facebookLink !== undefined) appState.facebookLink = data.facebookLink;
-                    if (data.whatsappNumber !== undefined) appState.whatsappNumber = data.whatsappNumber;
+                    if (data.whatsappLink !== undefined) {
+                        appState.whatsappLink = normalizeWhatsAppLink(data.whatsappLink);
+                        appState.whatsappNumber = extractWhatsAppNumber(appState.whatsappLink);
+                    } else if (data.whatsappNumber !== undefined) {
+                        appState.whatsappNumber = extractWhatsAppNumber(data.whatsappNumber);
+                        appState.whatsappLink = normalizeWhatsAppLink(appState.whatsappNumber);
+                    }
 
                     // Sync locally as fallback
                     saveStateToLocalStorage();
@@ -920,9 +950,12 @@
             });
         }
 
-        // Save Config doc to Cloud Firestore
+        // Save Config doc to Cloud Firestore and LocalStorage backup
         async function saveConfigToFirebase() {
-            if (!authUser) return;
+            appState.whatsappLink = normalizeWhatsAppLink(appState.whatsappLink || appState.whatsappNumber || DEFAULT_WHATSAPP_LINK);
+            appState.whatsappNumber = extractWhatsAppNumber(appState.whatsappLink);
+            saveStateToLocalStorage();
+
             const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config');
             try {
                 await setDoc(configDocRef, {
@@ -935,10 +968,13 @@
                     cancellationPolicy: appState.cancellationPolicy,
                     instagramLink: appState.instagramLink,
                     facebookLink: appState.facebookLink,
+                    whatsappLink: appState.whatsappLink,
                     whatsappNumber: appState.whatsappNumber
-                });
+                }, { merge: true });
+                return true;
             } catch (err) {
-                console.error("Error saving doc config:", err);
+                console.error("Error saving doc config. Alterações preservadas no navegador:", err);
+                return false;
             }
         }
 
@@ -953,6 +989,7 @@
             localStorage.setItem("turra_custom_cancellation_policy", appState.cancellationPolicy);
             localStorage.setItem("turra_custom_instagram", appState.instagramLink);
             localStorage.setItem("turra_custom_facebook", appState.facebookLink);
+            localStorage.setItem("turra_custom_whatsapp_link", appState.whatsappLink);
             localStorage.setItem("turra_custom_whatsapp_num", appState.whatsappNumber);
         }
 
@@ -976,8 +1013,15 @@
             if (stInsta) appState.instagramLink = stInsta;
             const stFb = localStorage.getItem("turra_custom_facebook");
             if (stFb) appState.facebookLink = stFb;
+            const stWALink = localStorage.getItem("turra_custom_whatsapp_link");
             const stWA = localStorage.getItem("turra_custom_whatsapp_num");
-            if (stWA) appState.whatsappNumber = stWA;
+            if (stWALink) {
+                appState.whatsappLink = normalizeWhatsAppLink(stWALink);
+                appState.whatsappNumber = extractWhatsAppNumber(appState.whatsappLink);
+            } else if (stWA) {
+                appState.whatsappNumber = extractWhatsAppNumber(stWA);
+                appState.whatsappLink = normalizeWhatsAppLink(appState.whatsappNumber);
+            }
         }
 
         function renderAll() {
@@ -1025,7 +1069,7 @@
             if (fbLink) fbLink.href = appState.facebookLink || '#';
 
             const waLink = document.getElementById('footer-whatsapp');
-            if (waLink) waLink.href = `https://wa.me/${appState.whatsappNumber}`;
+            if (waLink) waLink.href = normalizeWhatsAppLink(appState.whatsappLink || appState.whatsappNumber || DEFAULT_WHATSAPP_LINK);
         }
 
         function updatePolicyDisplay() {
@@ -1460,9 +1504,7 @@
             }
             textMessage += `\n_Enviado através do site de agendamentos._`;
 
-            const whatsappNumber = appState.whatsappNumber || "5516996269345"; 
-            const encodedText = encodeURIComponent(textMessage);
-            const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedText}`;
+            const whatsappUrl = getWhatsAppSendUrl(textMessage);
 
             showToast("Agendamento efetuado com sucesso! Redirecionando...", "success");
 
@@ -1515,9 +1557,7 @@
             textMessage += `💰 *Valor:* R$ ${Number(bookingToCancel.total).toFixed(2)}\n\n`;
             textMessage += `_Política:_ ${appState.cancellationPolicy}`;
 
-            const whatsappNumber = appState.whatsappNumber || "5516996269345";
-            const encodedText = encodeURIComponent(textMessage);
-            const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedText}`;
+            const whatsappUrl = getWhatsAppSendUrl(textMessage);
 
             updateLocalStorageDashboard();
             if (appState.selectedDate) {
@@ -1617,21 +1657,54 @@
 
                 document.getElementById('admin-social-instagram').value = appState.instagramLink || '';
                 document.getElementById('admin-social-facebook').value = appState.facebookLink || '';
-                document.getElementById('admin-social-whatsapp').value = appState.whatsappNumber || '';
+                document.getElementById('admin-social-whatsapp').value = normalizeWhatsAppLink(appState.whatsappLink || appState.whatsappNumber || DEFAULT_WHATSAPP_LINK);
             }
         }
 
-        function closeAdminPanel() {
+        function collectAdminFormValues() {
+            // Garante que mesmo o campo ainda em foco seja salvo ao clicar em "Salvar & Sair".
+            document.querySelectorAll('[data-service-id][data-service-field]').forEach(input => {
+                updateAdminServiceField(input.dataset.serviceId, input.dataset.serviceField, input.value);
+            });
+
+            const hoursInput = document.getElementById('admin-footer-hours');
+            if (hoursInput) appState.footerHours = hoursInput.value;
+
+            const addressInput = document.getElementById('admin-footer-address');
+            if (addressInput) appState.footerAddress = addressInput.value;
+
+            const policyInput = document.getElementById('admin-cancellation-policy');
+            if (policyInput) appState.cancellationPolicy = policyInput.value;
+
+            const instagramInput = document.getElementById('admin-social-instagram');
+            if (instagramInput) appState.instagramLink = instagramInput.value.trim();
+
+            const facebookInput = document.getElementById('admin-social-facebook');
+            if (facebookInput) appState.facebookLink = facebookInput.value.trim();
+
+            const whatsappInput = document.getElementById('admin-social-whatsapp');
+            if (whatsappInput) {
+                appState.whatsappLink = normalizeWhatsAppLink(whatsappInput.value || DEFAULT_WHATSAPP_LINK);
+                appState.whatsappNumber = extractWhatsAppNumber(appState.whatsappLink);
+                whatsappInput.value = appState.whatsappLink;
+            }
+
+            updateFooterDisplay();
+            updatePolicyDisplay();
+        }
+
+        async function closeAdminPanel() {
+            collectAdminFormValues();
+
             const panel = document.getElementById('admin-panel');
             if (panel) panel.classList.add('hidden');
             
-            // Push changes to Google Cloud Firestore instantly
-            saveConfigToFirebase();
+            // Push changes to Google Cloud Firestore and keep a local backup
+            const savedInCloud = await saveConfigToFirebase();
 
-            renderServicesCatalog();
-            renderSelectedServicesList();
+            renderAll();
             renderTimeSlots();
-            showToast("Alterações aplicadas com sucesso!");
+            showToast(savedInCloud ? "Alterações salvas com sucesso!" : "Alterações salvas neste navegador. Verifique a conexão com a nuvem.", savedInCloud ? "success" : "error");
         }
 
         function renderAdminServicesList() {
@@ -1645,15 +1718,15 @@
                     <div class="bg-brand-light p-4 rounded-2xl border border-brand-cream/80 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                         <div class="md:col-span-5 space-y-1">
                             <label class="block text-[9px] uppercase font-bold tracking-wider text-brand-accent">Nome do Serviço</label>
-                            <input type="text" value="${srv.name}" onchange="updateAdminServiceField('${id}', 'name', this.value)" class="w-full px-3 py-2 bg-white rounded-lg border border-brand-cream/60 focus:border-brand-gold focus:outline-none text-xs font-semibold text-brand-dark">
+                            <input type="text" value="${srv.name}" data-service-id="${id}" data-service-field="name" oninput="updateAdminServiceField('${id}', 'name', this.value)" class="w-full px-3 py-2 bg-white rounded-lg border border-brand-cream/60 focus:border-brand-gold focus:outline-none text-xs font-semibold text-brand-dark">
                         </div>
                         <div class="md:col-span-3 space-y-1">
                             <label class="block text-[9px] uppercase font-bold tracking-wider text-brand-accent">Preço (R$)</label>
-                            <input type="number" step="0.01" value="${srv.price}" onchange="updateAdminServiceField('${id}', 'price', this.value)" class="w-full px-3 py-2 bg-white rounded-lg border border-brand-cream/60 focus:border-brand-gold focus:outline-none text-xs font-semibold text-brand-dark">
+                            <input type="number" step="0.01" value="${srv.price}" data-service-id="${id}" data-service-field="price" oninput="updateAdminServiceField('${id}', 'price', this.value)" class="w-full px-3 py-2 bg-white rounded-lg border border-brand-cream/60 focus:border-brand-gold focus:outline-none text-xs font-semibold text-brand-dark">
                         </div>
                         <div class="md:col-span-4 space-y-1">
                             <label class="block text-[9px] uppercase font-bold tracking-wider text-brand-accent">Duração (Minutos)</label>
-                            <input type="number" value="${srv.duration}" onchange="updateAdminServiceField('${id}', 'duration', this.value)" class="w-full px-3 py-2 bg-white rounded-lg border border-brand-cream/60 focus:border-brand-gold focus:outline-none text-xs font-semibold text-brand-dark">
+                            <input type="number" value="${srv.duration}" data-service-id="${id}" data-service-field="duration" oninput="updateAdminServiceField('${id}', 'duration', this.value)" class="w-full px-3 py-2 bg-white rounded-lg border border-brand-cream/60 focus:border-brand-gold focus:outline-none text-xs font-semibold text-brand-dark">
                         </div>
                     </div>
                 `;
@@ -1727,9 +1800,11 @@
         }
 
         function updateSocialLink(field, value) {
-            if (field === 'whatsappNumber') {
-                const cleanNum = value.replace(/\D/g, '');
-                appState.whatsappNumber = cleanNum;
+            if (field === 'whatsappLink' || field === 'whatsappNumber') {
+                appState.whatsappLink = normalizeWhatsAppLink(value || DEFAULT_WHATSAPP_LINK);
+                appState.whatsappNumber = extractWhatsAppNumber(appState.whatsappLink);
+                const whatsappInput = document.getElementById('admin-social-whatsapp');
+                if (whatsappInput) whatsappInput.value = appState.whatsappLink;
             } else {
                 appState[field] = value;
             }
@@ -1791,6 +1866,7 @@
         window.validateAdminLogin = validateAdminLogin;
         window.openAdminPanel = openAdminPanel;
         window.closeAdminPanel = closeAdminPanel;
+        window.collectAdminFormValues = collectAdminFormValues;
         window.updateAdminServiceField = updateAdminServiceField;
         window.addNewHourSlot = addNewHourSlot;
         window.removeHourSlot = removeHourSlot;
