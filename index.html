@@ -850,6 +850,12 @@
             return `${baseLink}?text=${encodedText}`;
         }
 
+        function redirectToWhatsApp(whatsappUrl) {
+            // Usar a mesma aba evita bloqueio de pop-up, principalmente no navegador interno do Instagram e em celulares.
+            if (!whatsappUrl) return;
+            window.location.href = whatsappUrl;
+        }
+
         let appState = {
             services: {
                 "1": { name: "Alongamento de Unhas em Gel", price: 180, duration: 150 },
@@ -1601,14 +1607,13 @@
                 createdAt: Date.now()
             };
 
-            // 1. Save to Cloud Firestore
+            // 1. Save to Cloud Firestore sem travar o redirecionamento para o WhatsApp.
+            // Se a conexão com a nuvem estiver lenta, o cliente ainda será enviado para o WhatsApp normalmente.
             if (authUser) {
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'bookings', String(bookingId));
-                    await setDoc(docRef, newBooking);
-                } catch (e) {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'bookings', String(bookingId));
+                setDoc(docRef, newBooking).catch((e) => {
                     console.error("Firestore booking submit error (Using Local Fallback):", e);
-                }
+                });
             }
 
             // Fallback backup locally
@@ -1634,11 +1639,7 @@
 
             const whatsappUrl = getWhatsAppSendUrl(textMessage);
 
-            showToast("Agendamento efetuado com sucesso! Redirecionando...", "success");
-
-            setTimeout(() => {
-                window.open(whatsappUrl, '_blank');
-            }, 1000);
+            showToast("Agendamento efetuado com sucesso! Abrindo o WhatsApp...", "success");
 
             // Clean step form state
             appState.selectedServices = [];
@@ -1654,20 +1655,23 @@
 
             renderSelectedServicesList();
             goToStep(1);
+
+            // Redireciona na mesma aba para funcionar melhor no celular e dentro do Instagram.
+            setTimeout(() => {
+                redirectToWhatsApp(whatsappUrl);
+            }, 300);
         }
 
         async function cancelLocalBooking(id) {
             const bookingToCancel = appState.registeredBookings.find(b => String(b.id) === String(id));
             if (!bookingToCancel) return;
 
-            // Delete in Firebase Cloud Store
+            // Delete in Firebase Cloud Store sem travar o redirecionamento para o WhatsApp.
             if (authUser) {
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'bookings', String(id));
-                    await deleteDoc(docRef);
-                } catch (e) {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'bookings', String(id));
+                deleteDoc(docRef).catch((e) => {
                     console.error("Firestore cancel error:", e);
-                }
+                });
             }
 
             // Delete in local storage list backup
@@ -1695,8 +1699,8 @@
             showToast("Desmarcando... Abrindo o WhatsApp para enviar a notificação.", "success");
 
             setTimeout(() => {
-                window.open(whatsappUrl, '_blank');
-            }, 1200);
+                redirectToWhatsApp(whatsappUrl);
+            }, 300);
         }
 
         function updateLocalStorageDashboard() {
