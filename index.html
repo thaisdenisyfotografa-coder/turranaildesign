@@ -426,7 +426,7 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <!-- Image Card 1 -->
                 <div class="group relative rounded-2xl overflow-hidden shadow-gold-sm border border-brand-cream">
-                    <img src="https://placehold.co/400x500/1E120C/FCEFD2?text=Alongamento+Gel" alt="Nail Art Elegante" class="w-full h-72 object-cover transform group-hover:scale-105 transition-transform duration-500">
+                    <img id="inspiration-img-1" src="https://placehold.co/400x500/1E120C/FCEFD2?text=Alongamento+Gel" alt="Nail Art Elegante" class="w-full h-72 object-cover transform group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                         <div class="text-brand-light">
                             <p class="font-turra-serif font-bold text-lg">Alongamento Natural</p>
@@ -436,7 +436,7 @@
                 </div>
                 <!-- Image Card 2 -->
                 <div class="group relative rounded-2xl overflow-hidden shadow-gold-sm border border-brand-cream">
-                    <img src="https://placehold.co/400x500/8B5A2B/FAF6F0?text=Francesinha+Fina" alt="Nail Art Moderna" class="w-full h-72 object-cover transform group-hover:scale-105 transition-transform duration-500">
+                    <img id="inspiration-img-2" src="https://placehold.co/400x500/8B5A2B/FAF6F0?text=Francesinha+Fina" alt="Nail Art Moderna" class="w-full h-72 object-cover transform group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                         <div class="text-brand-light">
                             <p class="font-turra-serif font-bold text-lg">Nail Art Minimalista</p>
@@ -446,7 +446,7 @@
                 </div>
                 <!-- Image Card 3 -->
                 <div class="group relative rounded-2xl overflow-hidden shadow-gold-sm border border-brand-cream">
-                    <img src="https://placehold.co/400x500/2D1F18/FCEFD2?text=Esmaltação+Elegante" alt="Esmaltação Perfeita" class="w-full h-72 object-cover transform group-hover:scale-105 transition-transform duration-500">
+                    <img id="inspiration-img-3" src="https://placehold.co/400x500/2D1F18/FCEFD2?text=Esmaltação+Elegante" alt="Esmaltação Perfeita" class="w-full h-72 object-cover transform group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                         <div class="text-brand-light">
                             <p class="font-turra-serif font-bold text-lg">Esmaltação Gel</p>
@@ -456,7 +456,7 @@
                 </div>
                 <!-- Image Card 4 -->
                 <div class="group relative rounded-2xl overflow-hidden shadow-gold-sm border border-brand-cream">
-                    <img src="https://placehold.co/400x500/F3ECE0/1E120C?text=Folhas+de+Ouro" alt="Decoração Fina" class="w-full h-72 object-cover transform group-hover:scale-105 transition-transform duration-500">
+                    <img id="inspiration-img-4" src="https://placehold.co/400x500/F3ECE0/1E120C?text=Folhas+de+Ouro" alt="Decoração Fina" class="w-full h-72 object-cover transform group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                         <div class="text-brand-light">
                             <p class="font-turra-serif font-bold text-lg">Aplicação de Ouro</p>
@@ -565,7 +565,7 @@
 
         <div class="max-w-6xl mx-auto px-4 border-t border-white/10 pt-6 text-center text-[10px] text-brand-cream/40 flex flex-col sm:flex-row justify-between items-center gap-4">
             <p>&copy; 2026 TURRA nails design. Todos os direitos reservados.</p>
-            <p>Desenvolvido por Thaís Denisy.</p>
+            <p>Desenvolvido com sofisticação para unhas incríveis.</p>
         </div>
     </footer>
 
@@ -665,6 +665,71 @@
                             </label>
                         </div>
                         <button onclick="resetLogo()" class="text-[10px] text-brand-accent hover:underline block mx-auto">Restaurar Original</button>
+                    </div>
+                </div>
+
+                <!-- Inspiration Images Customization Card -->
+                <div class="bg-white p-6 rounded-3xl border border-brand-cream/80 space-y-6 shadow-sm">
+                    <div class="border-b border-brand-cream/60 pb-3">
+                        <h3 class="font-turra-serif text-lg font-bold text-brand-dark flex items-center gap-2">
+                            <i class="fa-regular fa-images text-brand-accent"></i>
+                            <span>Imagens das Inspirações</span>
+                        </h3>
+                        <p class="text-[10px] text-brand-slate">Troque as 4 imagens da seção “Nossas Inspirações”. Você pode escolher uma foto do computador ou colar um link de imagem.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-brand-light p-3 rounded-2xl border border-brand-cream/80 space-y-3">
+                            <div class="aspect-[4/5] rounded-xl overflow-hidden bg-white border border-brand-cream">
+                                <img id="admin-preview-inspiration-1" src="https://placehold.co/400x500/1E120C/FCEFD2?text=Alongamento+Gel" alt="Prévia inspiração 1" class="w-full h-full object-cover">
+                            </div>
+                            <input type="file" id="admin-inspiration-input-1" accept="image/*" class="hidden" onchange="handleInspirationImageUpload(0, event)">
+                            <label for="admin-inspiration-input-1" class="cursor-pointer flex items-center justify-center gap-2 px-3 py-2 bg-brand-dark hover:bg-brand-accent text-brand-light text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                                <span>Imagem 1</span>
+                            </label>
+                            <input type="url" id="admin-inspiration-url-1" oninput="updateInspirationImageUrl(0, this.value)" class="w-full px-3 py-2 bg-white rounded-lg border border-brand-cream/60 focus:border-brand-gold focus:outline-none text-[10px] text-brand-dark" placeholder="Cole o link da imagem 1">
+                            <button onclick="resetInspirationImage(0)" class="text-[10px] text-brand-accent hover:underline block mx-auto">Restaurar imagem 1</button>
+                        </div>
+
+                        <div class="bg-brand-light p-3 rounded-2xl border border-brand-cream/80 space-y-3">
+                            <div class="aspect-[4/5] rounded-xl overflow-hidden bg-white border border-brand-cream">
+                                <img id="admin-preview-inspiration-2" src="https://placehold.co/400x500/8B5A2B/FAF6F0?text=Francesinha+Fina" alt="Prévia inspiração 2" class="w-full h-full object-cover">
+                            </div>
+                            <input type="file" id="admin-inspiration-input-2" accept="image/*" class="hidden" onchange="handleInspirationImageUpload(1, event)">
+                            <label for="admin-inspiration-input-2" class="cursor-pointer flex items-center justify-center gap-2 px-3 py-2 bg-brand-dark hover:bg-brand-accent text-brand-light text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                                <span>Imagem 2</span>
+                            </label>
+                            <input type="url" id="admin-inspiration-url-2" oninput="updateInspirationImageUrl(1, this.value)" class="w-full px-3 py-2 bg-white rounded-lg border border-brand-cream/60 focus:border-brand-gold focus:outline-none text-[10px] text-brand-dark" placeholder="Cole o link da imagem 2">
+                            <button onclick="resetInspirationImage(1)" class="text-[10px] text-brand-accent hover:underline block mx-auto">Restaurar imagem 2</button>
+                        </div>
+
+                        <div class="bg-brand-light p-3 rounded-2xl border border-brand-cream/80 space-y-3">
+                            <div class="aspect-[4/5] rounded-xl overflow-hidden bg-white border border-brand-cream">
+                                <img id="admin-preview-inspiration-3" src="https://placehold.co/400x500/2D1F18/FCEFD2?text=Esmaltação+Elegante" alt="Prévia inspiração 3" class="w-full h-full object-cover">
+                            </div>
+                            <input type="file" id="admin-inspiration-input-3" accept="image/*" class="hidden" onchange="handleInspirationImageUpload(2, event)">
+                            <label for="admin-inspiration-input-3" class="cursor-pointer flex items-center justify-center gap-2 px-3 py-2 bg-brand-dark hover:bg-brand-accent text-brand-light text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                                <span>Imagem 3</span>
+                            </label>
+                            <input type="url" id="admin-inspiration-url-3" oninput="updateInspirationImageUrl(2, this.value)" class="w-full px-3 py-2 bg-white rounded-lg border border-brand-cream/60 focus:border-brand-gold focus:outline-none text-[10px] text-brand-dark" placeholder="Cole o link da imagem 3">
+                            <button onclick="resetInspirationImage(2)" class="text-[10px] text-brand-accent hover:underline block mx-auto">Restaurar imagem 3</button>
+                        </div>
+
+                        <div class="bg-brand-light p-3 rounded-2xl border border-brand-cream/80 space-y-3">
+                            <div class="aspect-[4/5] rounded-xl overflow-hidden bg-white border border-brand-cream">
+                                <img id="admin-preview-inspiration-4" src="https://placehold.co/400x500/F3ECE0/1E120C?text=Folhas+de+Ouro" alt="Prévia inspiração 4" class="w-full h-full object-cover">
+                            </div>
+                            <input type="file" id="admin-inspiration-input-4" accept="image/*" class="hidden" onchange="handleInspirationImageUpload(3, event)">
+                            <label for="admin-inspiration-input-4" class="cursor-pointer flex items-center justify-center gap-2 px-3 py-2 bg-brand-dark hover:bg-brand-accent text-brand-light text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                                <span>Imagem 4</span>
+                            </label>
+                            <input type="url" id="admin-inspiration-url-4" oninput="updateInspirationImageUrl(3, this.value)" class="w-full px-3 py-2 bg-white rounded-lg border border-brand-cream/60 focus:border-brand-gold focus:outline-none text-[10px] text-brand-dark" placeholder="Cole o link da imagem 4">
+                            <button onclick="resetInspirationImage(3)" class="text-[10px] text-brand-accent hover:underline block mx-auto">Restaurar imagem 4</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -791,6 +856,32 @@
 
         // State Management
         const DEFAULT_WHATSAPP_LINK = "https://wa.me/5516996269345";
+        const DEFAULT_INSPIRATION_IMAGES = [
+            { src: "https://placehold.co/400x500/1E120C/FCEFD2?text=Alongamento+Gel", alt: "Nail Art Elegante" },
+            { src: "https://placehold.co/400x500/8B5A2B/FAF6F0?text=Francesinha+Fina", alt: "Nail Art Moderna" },
+            { src: "https://placehold.co/400x500/2D1F18/FCEFD2?text=Esmaltação+Elegante", alt: "Esmaltação Perfeita" },
+            { src: "https://placehold.co/400x500/F3ECE0/1E120C?text=Folhas+de+Ouro", alt: "Decoração Fina" }
+        ];
+
+        function getDefaultInspirationImages() {
+            return DEFAULT_INSPIRATION_IMAGES.map(item => ({ ...item }));
+        }
+
+        function normalizeInspirationImages(images) {
+            const defaults = getDefaultInspirationImages();
+            const source = Array.isArray(images) ? images : [];
+
+            return defaults.map((item, index) => {
+                const current = source[index];
+                if (typeof current === 'string') {
+                    return { ...item, src: current || item.src };
+                }
+                if (current && typeof current === 'object') {
+                    return { ...item, ...current, src: current.src || item.src };
+                }
+                return item;
+            });
+        }
 
         function extractWhatsAppNumber(value) {
             return String(value || '').replace(/\D/g, '');
@@ -839,6 +930,7 @@
             timeSlots: ["09:00", "10:30", "13:00", "14:30", "16:00", "17:30"],
             profilePic: "WhatsApp Image 2026-07-07 at 23.22.44.jpeg",
             logo: "WhatsApp Image 2026-07-07 at 23.22.44.jpeg",
+            inspirationImages: getDefaultInspirationImages(),
             footerHours: "Terça a Sexta: 09h às 19h\nSábado: 09h às 17h\nDomingos e Segundas: Fechado",
             footerAddress: "Atendimento em Espaço Comercial Físico.",
             cancellationPolicy: "O cancelamento ou reagendamento deve ser feito com até 2 dias de antecedência.",
@@ -905,6 +997,7 @@
                     if (data.timeSlots) appState.timeSlots = data.timeSlots;
                     if (data.profilePic) appState.profilePic = data.profilePic;
                     if (data.logo) appState.logo = data.logo;
+                    if (data.inspirationImages) appState.inspirationImages = normalizeInspirationImages(data.inspirationImages);
                     if (data.footerHours !== undefined) appState.footerHours = data.footerHours;
                     if (data.footerAddress !== undefined) appState.footerAddress = data.footerAddress;
                     if (data.cancellationPolicy !== undefined) appState.cancellationPolicy = data.cancellationPolicy;
@@ -963,6 +1056,7 @@
                     timeSlots: appState.timeSlots,
                     profilePic: appState.profilePic,
                     logo: appState.logo,
+                    inspirationImages: appState.inspirationImages,
                     footerHours: appState.footerHours,
                     footerAddress: appState.footerAddress,
                     cancellationPolicy: appState.cancellationPolicy,
@@ -984,6 +1078,7 @@
             localStorage.setItem("turra_custom_slots", JSON.stringify(appState.timeSlots));
             localStorage.setItem("turra_custom_profile_pic", appState.profilePic);
             localStorage.setItem("turra_custom_logo", appState.logo);
+            localStorage.setItem("turra_custom_inspiration_images", JSON.stringify(appState.inspirationImages));
             localStorage.setItem("turra_custom_footer_hours", appState.footerHours);
             localStorage.setItem("turra_custom_footer_address", appState.footerAddress);
             localStorage.setItem("turra_custom_cancellation_policy", appState.cancellationPolicy);
@@ -1003,6 +1098,15 @@
             if (stProf) appState.profilePic = stProf;
             const stLogo = localStorage.getItem("turra_custom_logo");
             if (stLogo) appState.logo = stLogo;
+            const stInspirations = localStorage.getItem("turra_custom_inspiration_images");
+            if (stInspirations) {
+                try {
+                    appState.inspirationImages = normalizeInspirationImages(JSON.parse(stInspirations));
+                } catch (err) {
+                    console.warn("Não foi possível carregar as imagens das inspirações salvas localmente:", err);
+                    appState.inspirationImages = getDefaultInspirationImages();
+                }
+            }
             const stHours = localStorage.getItem("turra_custom_footer_hours");
             if (stHours) appState.footerHours = stHours;
             const stAddress = localStorage.getItem("turra_custom_footer_address");
@@ -1049,6 +1153,32 @@
             
             const adminLogoPreview = document.getElementById('admin-preview-logo-pic');
             if (adminLogoPreview) adminLogoPreview.src = appState.logo;
+
+            updateInspirationImagesDisplay();
+        }
+
+        function updateInspirationImagesDisplay() {
+            appState.inspirationImages = normalizeInspirationImages(appState.inspirationImages);
+
+            appState.inspirationImages.forEach((item, index) => {
+                const imageNumber = index + 1;
+                const frontendImage = document.getElementById(`inspiration-img-${imageNumber}`);
+                if (frontendImage) {
+                    frontendImage.src = item.src;
+                    frontendImage.alt = item.alt || `Inspiração ${imageNumber}`;
+                }
+
+                const adminPreview = document.getElementById(`admin-preview-inspiration-${imageNumber}`);
+                if (adminPreview) {
+                    adminPreview.src = item.src;
+                    adminPreview.alt = item.alt || `Prévia inspiração ${imageNumber}`;
+                }
+
+                const adminUrlInput = document.getElementById(`admin-inspiration-url-${imageNumber}`);
+                if (adminUrlInput && document.activeElement !== adminUrlInput) {
+                    adminUrlInput.value = item.src;
+                }
+            });
         }
 
         function updateFooterDisplay() {
@@ -1658,6 +1788,7 @@
                 document.getElementById('admin-social-instagram').value = appState.instagramLink || '';
                 document.getElementById('admin-social-facebook').value = appState.facebookLink || '';
                 document.getElementById('admin-social-whatsapp').value = normalizeWhatsAppLink(appState.whatsappLink || appState.whatsappNumber || DEFAULT_WHATSAPP_LINK);
+                updateInspirationImagesDisplay();
             }
         }
 
@@ -1689,8 +1820,17 @@
                 whatsappInput.value = appState.whatsappLink;
             }
 
+            appState.inspirationImages = normalizeInspirationImages(appState.inspirationImages);
+            appState.inspirationImages.forEach((item, index) => {
+                const input = document.getElementById(`admin-inspiration-url-${index + 1}`);
+                if (input) {
+                    appState.inspirationImages[index].src = input.value.trim() || DEFAULT_INSPIRATION_IMAGES[index].src;
+                }
+            });
+
             updateFooterDisplay();
             updatePolicyDisplay();
+            updateInspirationImagesDisplay();
         }
 
         async function closeAdminPanel() {
@@ -1811,6 +1951,69 @@
             updateFooterDisplay();
         }
 
+        function resizeImageFileToDataUrl(file, maxWidth = 900, maxHeight = 1200, quality = 0.82) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const originalDataUrl = e.target.result;
+                    const image = new Image();
+                    image.onload = function() {
+                        const ratio = Math.min(maxWidth / image.width, maxHeight / image.height, 1);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = Math.round(image.width * ratio);
+                        canvas.height = Math.round(image.height * ratio);
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    image.onerror = function() {
+                        resolve(originalDataUrl);
+                    };
+                    image.src = originalDataUrl;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateInspirationImageUrl(index, value) {
+            appState.inspirationImages = normalizeInspirationImages(appState.inspirationImages);
+            if (!appState.inspirationImages[index]) return;
+            appState.inspirationImages[index].src = value.trim() || DEFAULT_INSPIRATION_IMAGES[index].src;
+            updateInspirationImagesDisplay();
+        }
+
+        async function handleInspirationImageUpload(index, event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const imageData = await resizeImageFileToDataUrl(file);
+                appState.inspirationImages = normalizeInspirationImages(appState.inspirationImages);
+                appState.inspirationImages[index].src = imageData;
+
+                const urlInput = document.getElementById(`admin-inspiration-url-${index + 1}`);
+                if (urlInput) urlInput.value = imageData;
+
+                updateInspirationImagesDisplay();
+                showToast(`Imagem ${index + 1} das inspirações alterada!`);
+            } catch (err) {
+                console.error("Erro ao carregar imagem de inspiração:", err);
+                showToast("Não foi possível carregar essa imagem. Tente outra foto.", "error");
+            }
+        }
+
+        function resetInspirationImage(index) {
+            appState.inspirationImages = normalizeInspirationImages(appState.inspirationImages);
+            appState.inspirationImages[index] = { ...DEFAULT_INSPIRATION_IMAGES[index] };
+
+            const fileInput = document.getElementById(`admin-inspiration-input-${index + 1}`);
+            if (fileInput) fileInput.value = '';
+
+            updateInspirationImagesDisplay();
+            showToast(`Imagem ${index + 1} restaurada.`);
+        }
+
         function handleProfilePicUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1872,6 +2075,9 @@
         window.removeHourSlot = removeHourSlot;
         window.updateFooterInfo = updateFooterInfo;
         window.updateSocialLink = updateSocialLink;
+        window.updateInspirationImageUrl = updateInspirationImageUrl;
+        window.handleInspirationImageUpload = handleInspirationImageUpload;
+        window.resetInspirationImage = resetInspirationImage;
         window.handleProfilePicUpload = handleProfilePicUpload;
         window.resetProfilePic = resetProfilePic;
         window.handleLogoUpload = handleLogoUpload;
