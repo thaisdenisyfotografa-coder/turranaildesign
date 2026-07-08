@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TURRA nails design - Agendamento Online</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cormorant Garamond, Montserrat e Great Vibes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Montserrat:wght@200;300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+    <!-- FontAwesome para ícones premium -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            light: '#FAF6F0',    // Creme de fundo delicado
+                            cream: '#F3ECE0',    // Bege suave
+                            gold: '#D4AF37',     // Dourado clássico
+                            glow: '#FCEFD2',     // Brilho quente da iluminação
+                            dark: '#1E120C',     // Marrom profundo (texto e logo)
+                            accent: '#8B5A2B',   // Marrom médio para detalhes
+                            slate: '#5C544E'     // Cinza quente
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                        cursive: ['Great Vibes', 'cursive']
+                    },
+                    boxShadow: {
+                        'backlight': '0 0 25px rgba(252, 239, 210, 0.8), 0 0 10px rgba(212, 175, 55, 0.4)',
+                        'gold-sm': '0 2px 8px rgba(212, 175, 55, 0.15)',
+                        'gold-lg': '0 10px 30px rgba(212, 175, 55, 0.2)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #FAF6F0;
+            color: #1E120C;
+        }
+        .font-turra-serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+        .backlight-glow {
+            text-shadow: 0 0 12px rgba(252, 239, 210, 0.9), 0 0 4px rgba(212, 175, 55, 0.6);
+        }
+        .backlight-text {
+            color: #1E120C;
+            text-shadow: 
+                0 0 5px rgba(252, 239, 210, 0.9),
+                0 0 15px rgba(212, 175, 55, 0.6);
+        }
+        .box-glow {
+            box-shadow: 0 0 30px rgba(252, 239, 210, 0.7);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FAF6F0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8B5A2B;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1E120C;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-brand-gold selection:text-brand-dark">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 bg-brand-light/95 backdrop-blur-md border-b border-brand-cream transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo Area - Typographic Custom Backlit design with fallback support -->
+            <a href="#inicio" class="flex items-center group">
+                <div class="relative overflow-hidden rounded-xl border border-brand-gold/30 shadow-backlight bg-brand-dark px-4 py-1.5 transition-transform group-hover:scale-105 flex items-center h-14 min-w-[160px] justify-center">
+                    <img id="header-logo-img" src="WhatsApp Image 2026-07-07 at 23.22.44.jpeg" alt="TURRA Nails Design Logo" class="h-full w-auto object-contain rounded-lg hidden" onload="this.classList.remove('hidden'); document.getElementById('header-logo-text').classList.add('hidden')" onerror="this.classList.add('hidden'); document.getElementById('header-logo-text').classList.remove('hidden')">
+                    
+                    <!-- High-end elegant typographic fallback logo matching user physical brand sign -->
+                    <div id="header-logo-text" class="flex flex-col items-center justify-center leading-none text-center">
+                        <span class="font-turra-serif tracking-[0.25em] text-lg font-bold text-brand-glow uppercase">TURRA</span>
+                        <span class="font-cursive text-brand-gold text-xs tracking-normal -mt-0.5 font-light">nails design</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Desktop Menu -->
+            <nav class="hidden md:flex items-center space-x-8 text-xs font-semibold uppercase tracking-wider">
+                <a href="#inicio" class="text-brand-dark hover:text-brand-accent transition-colors">Início</a>
+                <a href="#servicos" class="text-brand-dark hover:text-brand-accent transition-colors">Serviços</a>
+                <a href="#agendamento" class="bg-brand-dark text-brand-light px-4 py-2 rounded-xl hover:bg-brand-accent transition-all hover:shadow-gold-sm">Agendar Agora</a>
+                <a href="#meus-agendamentos" class="text-brand-slate hover:text-brand-dark flex items-center space-x-1">
+                    <i class="fa-regular fa-calendar-check text-brand-gold"></i>
+                    <span>Minhas Sessões</span>
+                </a>
+                <!-- Admin Lock trigger button -->
+                <button onclick="openAdminLogin()" class="border border-brand-gold/40 text-brand-accent hover:bg-brand-dark hover:text-brand-light px-3 py-1.5 rounded-xl flex items-center space-x-1 transition-all" title="Painel da Profissional">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <span>Painel</span>
+                </button>
+            </nav>
+
+            <!-- Mobile Menu Toggle Button -->
+            <div class="flex items-center space-x-2 md:hidden">
+                <a href="#meus-agendamentos" class="p-2 text-brand-dark hover:text-brand-accent" title="Minhas Sessões">
+                    <i class="fa-regular fa-calendar-check text-lg"></i>
+                </a>
+                <button onclick="openAdminLogin()" class="p-2 text-brand-accent hover:text-brand-dark" title="Painel Restrito">
+                    <i class="fa-solid fa-user-gear text-lg"></i>
+                </button>
+                <button id="mobile-menu-btn" class="p-2 text-brand-dark hover:text-brand-accent focus:outline-none" aria-label="Abrir menu">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-brand-light border-b border-brand-cream px-4 py-4 space-y-3 transition-all duration-300">
+            <a href="#inicio" class="block py-2 text-brand-dark font-medium border-b border-brand-cream/50" onclick="toggleMobileMenu()">Início</a>
+            <a href="#servicos" class="block py-2 text-brand-dark font-medium border-b border-brand-cream/50" onclick="toggleMobileMenu()">Serviços</a>
+            <a href="#agendamento" class="block py-2 text-brand-accent font-semibold border-b border-brand-cream/50" onclick="toggleMobileMenu()">Agendar Agora</a>
+            <a href="#meus-agendamentos" class="block py-2 text-brand-slate font-medium" onclick="toggleMobileMenu()">Minhas Sessões</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="relative py-16 md:py-24 overflow-hidden bg-gradient-to-b from-brand-light to-brand-cream/40">
+        <!-- Background light circular glow -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-glow/40 rounded-full blur-[80px] -z-10"></div>
+        
+        <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+            <!-- Hero Left Side - Text & CTA -->
+            <div class="md:col-span-7 text-center md:text-left space-y-6">
+                <div class="inline-flex items-center space-x-2 bg-brand-glow/70 px-4 py-1.5 rounded-full border border-brand-gold/30 text-xs font-semibold uppercase tracking-widest text-brand-accent">
+                    <i class="fa-solid fa-sparkles text-brand-gold animate-pulse"></i>
+                    <span>Sofisticação & Alta Durabilidade</span>
+                </div>
+                
+                <h1 class="font-turra-serif text-5xl md:text-7xl font-bold text-brand-dark leading-tight">
+                    Sua beleza expressa <br>
+                    <span class="relative inline-block">
+                        nas suas mãos
+                        <span class="absolute left-0 -bottom-2 w-full h-[3px] bg-gradient-to-r from-brand-gold via-brand-accent to-transparent"></span>
+                    </span>
+                </h1>
+                
+                <p class="text-brand-slate text-base md:text-lg max-w-lg leading-relaxed font-light">
+                    Agende sua sessão no espaço <strong class="font-semibold text-brand-accent">TURRA nails design</strong>. Especialistas em alongamentos elegantes, cuidados premium e decorações minimalistas sofisticadas.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
+                    <a href="#agendamento" class="px-8 py-4 bg-brand-dark hover:bg-brand-accent text-brand-light font-medium tracking-wider rounded-xl transition-all shadow-lg hover:shadow-gold-lg text-center flex items-center justify-center space-x-2">
+                        <i class="fa-regular fa-calendar-days"></i>
+                        <span>Agendar Meu Horário</span>
+                    </a>
+                    <a href="#servicos" class="px-8 py-4 bg-white/80 hover:bg-white border border-brand-cream text-brand-dark font-medium tracking-wider rounded-xl transition-all text-center">
+                        Ver Cardápio de Serviços
+                    </a>
+                </div>
+
+                <div class="flex items-center justify-center md:justify-start space-x-6 pt-6 text-sm text-brand-slate">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-shield-heart text-brand-gold"></i>
+                        <span>Biossegurança</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-gem text-brand-gold"></i>
+                        <span>Produtos Premium</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Right Side - Profile picture & signature card -->
+            <div class="md:col-span-5 flex justify-center">
+                <div class="relative group">
+                    <!-- Glow light background behind the board image -->
+                    <div class="absolute -inset-2 bg-gradient-to-r from-brand-gold via-brand-glow to-brand-accent rounded-2xl blur-xl opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                    
+                    <!-- Main Image Card mimicking physical elegant backlit wall sign -->
+                    <div class="relative bg-brand-dark p-6 rounded-2xl shadow-2xl max-w-md border border-brand-gold/40 text-center overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,rgba(252,239,210,0.15)_0%,transparent_70%)]"></div>
+                        
+                        <!-- Premium Physical Plaque Render -->
+                        <div class="rounded-xl p-6 mb-6 border border-brand-gold/20 shadow-md bg-brand-dark relative overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
+                            <!-- Real logo image if available -->
+                            <img id="display-profile-pic" src="WhatsApp Image 2026-07-07 at 23.22.44.jpeg" alt="TURRA nails design" class="w-full h-full object-cover rounded-lg hidden absolute inset-0 z-0 opacity-20" onload="this.classList.remove('hidden')" onerror="this.classList.add('hidden')">
+                            
+                            <!-- Pure High-End Typographic Backlit Replica inside the card -->
+                            <div class="relative z-10 flex flex-col items-center justify-center text-center select-none py-6">
+                                <span class="font-turra-serif text-brand-glow text-4xl md:text-5xl font-bold tracking-[0.25em] uppercase leading-none mb-1 backlit-text">TURRA</span>
+                                <div class="w-16 h-[1px] bg-brand-gold/40 my-1"></div>
+                                <span class="font-cursive text-brand-gold text-2xl md:text-3xl tracking-wide">nails design</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 relative z-10">
+                            <h3 class="font-turra-serif text-brand-glow text-2xl font-semibold tracking-wider">Espaço Exclusivo</h3>
+                            <p class="text-brand-light/70 text-xs uppercase tracking-widest">Atendimento VIP Personalizado</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="servicos" class="py-20 bg-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center max-w-xl mx-auto mb-16 space-y-4">
+                <h2 class="font-turra-serif text-4xl md:text-5xl font-bold tracking-tight text-brand-dark">Nossos Serviços</h2>
+                <p class="font-cursive text-3xl text-brand-accent">Menu de Sofisticação</p>
+                <div class="w-16 h-1 bg-brand-gold mx-auto rounded-full mt-2"></div>
+                <p class="text-brand-slate text-sm">Selecione os procedimentos desejados. Você poderá agendar múltiplos serviços de uma vez só!</p>
+            </div>
+
+            <!-- Dynamic Services Cards Grid (Rendered via JS) -->
+            <div id="services-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Injected by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Engine Section -->
+    <section id="agendamento" class="py-20 bg-brand-cream/30 relative">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(252,239,210,0.3)_0%,transparent_70%)] pointer-events-none"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 relative z-10">
+            <div class="text-center max-w-xl mx-auto mb-12 space-y-4">
+                <h2 class="font-turra-serif text-4xl font-bold text-brand-dark">Agende Sua Sessão</h2>
+                <p class="text-brand-slate text-sm">Monte o agendamento perfeito escolhendo os detalhes abaixo.</p>
+                <div class="w-12 h-0.5 bg-brand-gold mx-auto"></div>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-brand-cream/80 p-6 md:p-10 shadow-gold-lg">
+                
+                <!-- PROGRESS BAR -->
+                <div class="flex items-center justify-between mb-8 max-w-lg mx-auto">
+                    <div class="flex flex-col items-center flex-1">
+                        <div id="step-1-indicator" class="w-10 h-10 rounded-full bg-brand-dark text-brand-light flex items-center justify-center font-semibold text-sm transition-all shadow-md">1</div>
+                        <span class="text-[10px] uppercase tracking-wider font-semibold text-brand-dark mt-2">Procedimentos</span>
+                    </div>
+                    <div class="h-[2px] bg-brand-cream flex-1 -mt-5 transition-all" id="line-step-1"></div>
+                    <div class="flex flex-col items-center flex-1">
+                        <div id="step-2-indicator" class="w-10 h-10 rounded-full bg-brand-cream text-brand-slate flex items-center justify-center font-semibold text-sm transition-all">2</div>
+                        <span class="text-[10px] uppercase tracking-wider font-semibold text-brand-slate mt-2">Data e Hora</span>
+                    </div>
+                    <div class="h-[2px] bg-brand-cream flex-1 -mt-5 transition-all" id="line-step-2"></div>
+                    <div class="flex flex-col items-center flex-1">
+                        <div id="step-3-indicator" class="w-10 h-10 rounded-full bg-brand-cream text-brand-slate flex items-center justify-center font-semibold text-sm transition-all">3</div>
+                        <span class="text-[10px] uppercase tracking-wider font-semibold text-brand-slate mt-2">Seus Dados</span>
+                    </div>
+                </div>
+
+                <!-- STEP 1: SERVICE SUMMARY IN WIDGET -->
+                <div id="step-section-1" class="space-y-6">
+                    <h3 class="font-turra-serif text-2xl font-semibold text-brand-dark border-b border-brand-light pb-2">1. Procedimentos Escolhidos</h3>
+                    
+                    <!-- Selected services placeholder -->
+                    <div id="selected-services-list" class="space-y-3">
+                        <!-- Dynamic Selected Elements -->
+                    </div>
+
+                    <!-- Selected Total Card -->
+                    <div id="checkout-total-card" class="hidden bg-brand-light p-5 rounded-2xl border border-brand-cream flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div>
+                            <p class="text-xs text-brand-slate uppercase tracking-wider">Investimento Total Estimado</p>
+                            <p id="checkout-total-price" class="font-turra-serif text-3xl font-bold text-brand-dark">R$ 0,00</p>
+                        </div>
+                        <button onclick="goToStep(2)" class="w-full sm:w-auto px-8 py-3.5 bg-brand-dark hover:bg-brand-accent text-brand-light text-sm font-semibold uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center space-x-2">
+                            <span>Prosseguir</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: DATE & TIME SELECTION -->
+                <div id="step-section-2" class="hidden space-y-6">
+                    <h3 class="font-turra-serif text-2xl font-semibold text-brand-dark border-b border-brand-light pb-2">2. Escolha o Melhor Dia e Horário</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Custom Calendar Container -->
+                        <div class="bg-brand-light/40 p-4 rounded-2xl border border-brand-cream/70">
+                            <!-- Calendar Header -->
+                            <div class="flex items-center justify-between mb-4">
+                                <button type="button" onclick="prevMonth()" class="p-2 hover:bg-brand-cream rounded-lg text-brand-dark transition-colors"><i class="fa-solid fa-chevron-left"></i></button>
+                                <span id="calendar-month-year" class="font-turra-serif font-bold text-lg text-brand-dark">Julho 2026</span>
+                                <button type="button" onclick="nextMonth()" class="p-2 hover:bg-brand-cream rounded-lg text-brand-dark transition-colors"><i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                            <!-- Calendar Grid -->
+                            <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold uppercase tracking-wider text-brand-slate mb-2">
+                                <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+                            </div>
+                            <div id="calendar-days" class="grid grid-cols-7 gap-1">
+                                <!-- Days dynamically injected here -->
+                            </div>
+                            <p class="text-[10px] text-brand-slate/80 mt-4 italic"><i class="fa-solid fa-circle-info text-brand-gold"></i> Atendemos de terça a sábado. Dias desabilitados já estão sem vagas ou fechados.</p>
+                        </div>
+
+                        <!-- Time Slots Container -->
+                        <div class="space-y-4">
+                            <span class="block text-sm font-semibold tracking-wider text-brand-dark uppercase">Horários Disponíveis</span>
+                            <div id="selected-date-preview" class="text-xs bg-brand-glow/80 text-brand-accent px-3 py-2 rounded-lg font-medium border border-brand-gold/20 inline-block">
+                                Selecione uma data ao lado
+                            </div>
+                            <div id="time-slots-grid" class="grid grid-cols-3 gap-2 pt-2">
+                                <!-- Time buttons dynamic -->
+                            </div>
+                            <p class="text-[10px] text-brand-slate/80 italic"><i class="fa-regular fa-clock"></i> Horários já reservados por outras clientes serão exibidos como desabilitados (riscados).</p>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Action Buttons -->
+                    <div class="flex justify-between items-center pt-6 border-t border-brand-light">
+                        <button onclick="goToStep(1)" class="px-6 py-3 border border-brand-cream text-brand-dark text-sm font-semibold uppercase tracking-wider rounded-xl hover:bg-brand-light transition-all">
+                            Voltar
+                        </button>
+                        <button onclick="validateStep2AndProceed()" class="px-8 py-3.5 bg-brand-dark hover:bg-brand-accent text-brand-light text-sm font-semibold uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center space-x-2">
+                            <span>Continuar</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: CLIENT DETAILS & FINAL SUMMIT -->
+                <div id="step-section-3" class="hidden space-y-6">
+                    <h3 class="font-turra-serif text-2xl font-semibold text-brand-dark border-b border-brand-light pb-2">3. Preencha Seus Dados para Concluir</h3>
+                    
+                    <form id="booking-form" onsubmit="handleBookingSubmit(event)" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="client-name" class="block text-xs font-semibold uppercase tracking-wider text-brand-dark">Seu Nome Completo *</label>
+                                <input type="text" id="client-name" required placeholder="Digite seu nome..." class="w-full px-4 py-3 bg-brand-light rounded-xl border border-brand-cream focus:border-brand-gold focus:ring-1 focus:ring-brand-gold focus:outline-none transition-all text-sm">
+                            </div>
+                            <div class="space-y-2">
+                                <label for="client-phone" class="block text-xs font-semibold uppercase tracking-wider text-brand-dark">Celular / WhatsApp *</label>
+                                <input type="tel" id="client-phone" required placeholder="(00) 90000-0000" class="w-full px-4 py-3 bg-brand-light rounded-xl border border-brand-cream focus:border-brand-gold focus:ring-1 focus:ring-brand-gold focus:outline-none transition-all text-sm">
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="client-notes" class="block text-xs font-semibold uppercase tracking-wider text-brand-dark">Observações Adicionais (Opcional)</label>
+                            <textarea id="client-notes" rows="3" placeholder="Gostaria de informar alguma preferência, alergia ou formato de unha?" class="w-full px-4 py-3 bg-brand-light rounded-xl border border-brand-cream focus:border-brand-gold focus:ring-1 focus:ring-brand-gold focus:outline-none transition-all text-sm"></textarea>
+                        </div>
+
+                        <!-- Final Summary Panel before submit -->
+                        <div class="bg-brand-glow/40 p-6 rounded-2xl border border-brand-gold/20 space-y-4">
+                            <h4 class="font-turra-serif text-lg font-semibold text-brand-dark flex items-center gap-2">
+                                <i class="fa-solid fa-receipt text-brand-accent"></i>
+                                <span>Resumo do seu Agendamento</span>
+                            </h4>
+                            <div class="text-sm space-y-2 text-brand-slate">
+                                <div class="flex justify-between border-b border-brand-cream/60 pb-1.5">
+                                    <span class="font-medium">Serviços Selecionados:</span>
+                                    <span id="summary-services-list" class="text-right font-semibold text-brand-dark max-w-xs truncate">Nenhum</span>
+                                </div>
+                                <div class="flex justify-between border-b border-brand-cream/60 pb-1.5">
+                                    <span class="font-medium">Data Agendada:</span>
+                                    <span id="summary-date" class="font-semibold text-brand-dark">Nenhum</span>
+                                </div>
+                                <div class="flex justify-between border-b border-brand-cream/60 pb-1.5">
+                                    <span class="font-medium">Horário Selecionado:</span>
+                                    <span id="summary-time" class="font-semibold text-brand-dark">Nenhum</span>
+                                </div>
+                                <div class="flex justify-between pt-1">
+                                    <span class="font-bold text-brand-dark">Total Geral:</span>
+                                    <span id="summary-total" class="font-bold text-brand-accent text-lg">R$ 0,00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation & Finish Actions -->
+                        <div class="flex justify-between items-center pt-4">
+                            <button type="button" onclick="goToStep(2)" class="px-6 py-3 border border-brand-cream text-brand-dark text-sm font-semibold uppercase tracking-wider rounded-xl hover:bg-brand-light transition-all">
+                                Voltar
+                            </button>
+                            <button type="submit" class="px-8 py-4 bg-brand-dark hover:bg-brand-accent text-brand-light text-sm font-semibold uppercase tracking-wider rounded-xl transition-all shadow-lg hover:shadow-gold-lg flex items-center justify-center space-x-2">
+                                <i class="fa-brands fa-whatsapp text-lg"></i>
+                                <span>Confirmar & Enviar Whats</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- My Bookings Section -->
+    <section id="meus-agendamentos" class="py-16 bg-white border-t border-brand-cream">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="text-center max-w-xl mx-auto mb-8 space-y-3">
+                <h2 class="font-turra-serif text-3xl font-bold text-brand-dark">Seus Agendamentos Realizados</h2>
+                <p class="text-brand-slate text-xs uppercase tracking-wider">Histórico salvo localmente no seu aparelho</p>
+                <div class="w-12 h-0.5 bg-brand-gold mx-auto"></div>
+            </div>
+
+            <!-- Cancellation Rules Banner Notice (Editable via Admin) -->
+            <div id="cancellation-policy-banner" class="max-w-2xl mx-auto mb-8 bg-amber-50/80 border border-amber-200/50 rounded-2xl p-4 text-xs text-brand-slate text-center flex items-center justify-center gap-2">
+                <i class="fa-solid fa-circle-exclamation text-brand-accent animate-pulse"></i>
+                <span id="policy-display-text" class="font-semibold">O cancelamento ou reagendamento deve ser feito com até 2 dias de antecedência.</span>
+            </div>
+
+            <!-- List of stored sessions -->
+            <div id="local-appointments-container" class="space-y-4">
+                <!-- Dynamic appointments listed here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Showcase / Gallery Portfolio Section -->
+    <section class="py-20 bg-brand-light">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center max-w-xl mx-auto mb-16 space-y-4">
+                <h2 class="font-turra-serif text-4xl font-bold text-brand-dark">Nossas Inspirações</h2>
+                <p class="font-cursive text-3xl text-brand-accent">Estilo de Luxo</p>
+                <p class="text-brand-slate text-sm">Visualizações estéticas de unhas impecáveis feitas em nosso espaço.</p>
+                <div class="w-12 h-0.5 bg-brand-gold mx-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <!-- Image Card 1 -->
+                <div class="group relative rounded-2xl overflow-hidden shadow-gold-sm border border-brand-cream">
+                    <img src="https://placehold.co/400x500/1E120C/FCEFD2?text=Alongamento+Gel" alt="Nail Art Elegante" class="w-full h-72 object-cover transform group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                        <div class="text-brand-light">
+                            <p class="font-turra-serif font-bold text-lg">Alongamento Natural</p>
+                            <p class="text-xs text-brand-gold">Formato Amendoado</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Image Card 2 -->
+                <div class="group relative rounded-2xl overflow-hidden shadow-gold-sm border border-brand-cream">
+                    <img src="https://placehold.co/400x500/8B5A2B/FAF6F0?text=Francesinha+Fina" alt="Nail Art Moderna" class="w-full h-72 object-cover transform group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                        <div class="text-brand-light">
+                            <p class="font-turra-serif font-bold text-lg">Nail Art Minimalista</p>
+                            <p class="text-xs text-brand-gold">Francesinha Reversa</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Image Card 3 -->
+                <div class="group relative rounded-2xl overflow-hidden shadow-gold-sm border border-brand-cream">
+                    <img src="https://placehold.co/400x500/2D1F18/FCEFD2?text=Esmaltação+Elegante" alt="Esmaltação Perfeita" class="w-full h-72 object-cover transform group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                        <div class="text-brand-light">
+                            <p class="font-turra-serif font-bold text-lg">Esmaltação Gel</p>
+                            <p class="text-xs text-brand-gold">Brilho Duradouro</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Image Card 4 -->
+                <div class="group relative rounded-2xl overflow-hidden shadow-gold-sm border border-brand-cream">
+                    <img src="https://placehold.co/400x500/F3ECE0/1E120C?text=Folhas+de+Ouro" alt="Decoração Fina" class="w-full h-72 object-cover transform group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                        <div class="text-brand-light">
+                            <p class="font-turra-serif font-bold text-lg">Aplicação de Ouro</p>
+                            <p class="text-xs text-brand-gold">Encapsulamento Luxo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="text-center max-w-xl mx-auto mb-12 space-y-3">
+                <h2 class="font-turra-serif text-3xl font-bold text-brand-dark">Perguntas Frequentes</h2>
+                <p class="text-brand-slate text-sm">Tire suas dúvidas antes de realizar o seu agendamento.</p>
+                <div class="w-12 h-0.5 bg-brand-gold mx-auto"></div>
+            </div>
+
+            <div class="space-y-4">
+                <!-- FAQ Item 1 -->
+                <div class="border border-brand-cream rounded-2xl p-5 hover:border-brand-gold/40 transition-colors">
+                    <button class="w-full flex justify-between items-center text-left font-semibold text-brand-dark" onclick="toggleFAQ(this)">
+                        <span>Qual a durabilidade de um alongamento em gel?</span>
+                        <i class="fa-solid fa-chevron-down text-brand-accent transition-transform"></i>
+                    </button>
+                    <div class="faq-answer hidden mt-3 text-sm text-brand-slate leading-relaxed">
+                        A durabilidade do gel estruturado é altíssima. No entanto, é fundamental realizar a manutenção entre 20 a 25 dias para garantir a saúde da sua unha natural e o equilíbrio do peso físico do produto.
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="border border-brand-cream rounded-2xl p-5 hover:border-brand-gold/40 transition-colors">
+                    <button class="w-full flex justify-between items-center text-left font-semibold text-brand-dark" onclick="toggleFAQ(this)">
+                        <span>Posso agendar mais de um serviço ao mesmo tempo?</span>
+                        <i class="fa-solid fa-chevron-down text-brand-accent transition-transform"></i>
+                    </button>
+                    <div class="faq-answer hidden mt-3 text-sm text-brand-slate leading-relaxed">
+                        Sim! Nosso sistema calcula o tempo total dos procedimentos e mostra os horários que atendem a soma da duração de tudo o que você escolheu. Perfeito para otimizar seu tempo!
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="border border-brand-cream rounded-2xl p-5 hover:border-brand-gold/40 transition-colors">
+                    <button class="w-full flex justify-between items-center text-left font-semibold text-brand-dark" onclick="toggleFAQ(this)">
+                        <span>Como funciona a biossegurança no espaço?</span>
+                        <i class="fa-solid fa-chevron-down text-brand-accent transition-transform"></i>
+                    </button>
+                    <div class="faq-answer hidden mt-3 text-sm text-brand-slate leading-relaxed">
+                        Prezamos ao máximo pela sua saúde. Todos os instrumentos metálicos de corte e cutilagem passam por lavagem ultrassônica e esterilização em autoclave hospitalar. Lixas e palitos são rigorosamente descartáveis.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brand-dark text-brand-cream/80 pt-16 pb-8 border-t border-brand-accent/30 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+            <!-- Footer col 1 - Logo & About -->
+            <div class="space-y-4 md:col-span-2">
+                <div class="flex items-center space-x-3">
+                    <div class="relative overflow-hidden border border-brand-gold/30 p-1 bg-brand-dark flex items-center rounded-lg min-w-[150px] justify-center h-12">
+                        <img id="footer-logo-img" src="WhatsApp Image 2026-07-07 at 23.22.44.jpeg" alt="Logo" class="h-full w-auto object-contain rounded hidden" onload="this.classList.remove('hidden'); document.getElementById('footer-logo-text').classList.add('hidden')" onerror="this.classList.add('hidden'); document.getElementById('footer-logo-text').classList.remove('hidden')">
+                        
+                        <!-- High-end elegant typographic fallback logo inside footer -->
+                        <div id="footer-logo-text" class="flex flex-col items-center justify-center leading-none text-center">
+                            <span class="font-turra-serif tracking-[0.2em] text-sm font-bold text-brand-glow uppercase">TURRA</span>
+                            <span class="font-cursive text-brand-gold text-[10px] tracking-normal -mt-0.5 font-light">nails design</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-xs text-brand-cream/60 leading-relaxed max-w-sm">
+                    Elevando a autoestima de mulheres extraordinárias através do design impecável e cuidados especiais com as mãos. Atendimento exclusivo e hora marcada.
+                </p>
+                <div class="flex items-center space-x-4 pt-2">
+                    <a id="footer-instagram" href="#" target="_blank" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-gold hover:text-brand-dark transition-all flex items-center justify-center text-brand-light"><i class="fa-brands fa-instagram"></i></a>
+                    <a id="footer-facebook" href="#" target="_blank" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-gold hover:text-brand-dark transition-all flex items-center justify-center text-brand-light"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a id="footer-whatsapp" href="https://wa.me/5516996269345" target="_blank" class="w-8 h-8 rounded-full bg-white/10 hover:bg-brand-gold hover:text-brand-dark transition-all flex items-center justify-center text-brand-light"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+
+            <!-- Footer col 2 - Links -->
+            <div class="space-y-4">
+                <h4 class="font-turra-serif text-brand-light font-bold uppercase tracking-wider text-sm">Navegação</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#inicio" class="hover:text-brand-gold transition-colors">Início</a></li>
+                    <li><a href="#servicos" class="hover:text-brand-gold transition-colors">Serviços</a></li>
+                    <li><a href="#agendamento" class="hover:text-brand-gold transition-colors">Fazer Agendamento</a></li>
+                    <li><a href="#meus-agendamentos" class="hover:text-brand-gold transition-colors">Consultar Sessão</a></li>
+                </ul>
+            </div>
+
+            <!-- Footer col 3 - Location Info -->
+            <div class="space-y-4">
+                <h4 class="font-turra-serif text-brand-light font-bold uppercase tracking-wider text-sm">Funcionamento</h4>
+                <p id="footer-hours-display" class="text-xs text-brand-cream/60 leading-relaxed font-light">
+                    <!-- Dynamic Operational Hours -->
+                </p>
+                <p id="footer-address-display" class="text-xs text-brand-gold flex items-center">
+                    <!-- Dynamic Address -->
+                </p>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 border-t border-white/10 pt-6 text-center text-[10px] text-brand-cream/40 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p>&copy; 2026 TURRA nails design. Todos os direitos reservados.</p>
+            <p>Desenvolvido com sofisticação para unhas incríveis.</p>
+        </div>
+    </footer>
+
+    <!-- Admin LOGIN Overlay Modal -->
+    <div id="admin-login-modal" class="fixed inset-0 z-50 hidden bg-brand-dark/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-brand-light rounded-3xl p-6 md:p-8 max-w-sm w-full border border-brand-gold/40 shadow-gold-lg text-center space-y-6 relative">
+            <button onclick="closeAdminLogin()" class="absolute top-4 right-4 text-brand-slate hover:text-brand-dark text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-16 h-16 bg-brand-dark rounded-full mx-auto flex items-center justify-center border border-brand-gold shadow-md">
+                <i class="fa-solid fa-lock text-brand-gold text-2xl"></i>
+            </div>
+            <div>
+                <h3 class="font-turra-serif text-2xl font-bold text-brand-dark">Acesso Restrito</h3>
+                <p class="text-xs text-brand-slate/80 mt-1">Identifique-se para acessar o painel de edição profissional.</p>
+            </div>
+            
+            <div class="space-y-3">
+                <input type="password" id="admin-passcode" placeholder="Digite a senha" class="w-full text-center px-4 py-3 bg-white rounded-xl border border-brand-cream focus:border-brand-gold focus:outline-none transition-all text-sm tracking-widest font-bold">
+                <button onclick="validateAdminLogin()" class="w-full py-3.5 bg-brand-dark hover:bg-brand-accent text-brand-light text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-md">
+                    Entrar no Painel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin MAIN Panel (Full Screen Modal) -->
+    <div id="admin-panel" class="fixed inset-0 z-50 hidden bg-brand-light overflow-y-auto animate-fade-in">
+        <!-- Control Header -->
+        <header class="bg-brand-dark text-brand-light border-b border-brand-gold/30 sticky top-0 z-10">
+            <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-sliders text-brand-gold text-xl"></i>
+                    <div>
+                        <h2 class="font-turra-serif text-xl font-bold tracking-wider">Painel da Profissional</h2>
+                        <span class="text-[9px] uppercase tracking-widest text-brand-gold">Modo de Configuração</span>
+                    </div>
+                </div>
+                <button onclick="closeAdminPanel()" class="bg-brand-accent hover:bg-brand-gold text-brand-light hover:text-brand-dark text-xs font-bold uppercase tracking-widest px-4 py-2.5 rounded-xl transition-all flex items-center space-x-2">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Salvar & Sair</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Configuration Body Grid -->
+        <main class="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Panel: Profile, Logo & Social Customization -->
+            <div class="lg:col-span-4 space-y-6">
+                <!-- Profile Picture Card -->
+                <div class="bg-white p-6 rounded-3xl border border-brand-cream/80 space-y-6 shadow-sm">
+                    <div class="border-b border-brand-cream/60 pb-3">
+                        <h3 class="font-turra-serif text-lg font-bold text-brand-dark flex items-center gap-2">
+                            <i class="fa-solid fa-image-portrait text-brand-accent"></i>
+                            <span>Foto de Perfil</span>
+                        </h3>
+                        <p class="text-[10px] text-brand-slate">Esta foto aparecerá na capa do seu site.</p>
+                    </div>
+                    
+                    <div class="space-y-4 text-center">
+                        <div class="w-40 h-40 mx-auto rounded-2xl overflow-hidden border border-brand-gold bg-brand-light flex items-center justify-center">
+                            <img id="admin-preview-profile-pic" src="WhatsApp Image 2026-07-07 at 23.22.44.jpeg" alt="Preview da Foto" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/150x150/1E120C/FCEFD2?text=TURRA'">
+                        </div>
+                        
+                        <div class="relative">
+                            <input type="file" id="admin-profile-pic-input" accept="image/*" class="hidden" onchange="handleProfilePicUpload(event)">
+                            <label for="admin-profile-pic-input" class="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 bg-brand-light hover:bg-brand-cream border border-brand-cream text-brand-dark text-xs font-semibold uppercase tracking-wider rounded-xl transition-all">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                                <span>Escolher Imagem</span>
+                            </label>
+                        </div>
+                        <button onclick="resetProfilePic()" class="text-[10px] text-brand-accent hover:underline block mx-auto">Restaurar Original</button>
+                    </div>
+                </div>
+
+                <!-- Logo Customization Card -->
+                <div class="bg-white p-6 rounded-3xl border border-brand-cream/80 space-y-6 shadow-sm">
+                    <div class="border-b border-brand-cream/60 pb-3">
+                        <h3 class="font-turra-serif text-lg font-bold text-brand-dark flex items-center gap-2">
+                            <i class="fa-solid fa-gem text-brand-accent"></i>
+                            <span>Logo do Site</span>
+                        </h3>
+                        <p class="text-[10px] text-brand-slate">Esta imagem será exibida no cabeçalho e no rodapé do site.</p>
+                    </div>
+                    
+                    <div class="space-y-4 text-center">
+                        <div class="h-20 max-w-[200px] mx-auto rounded-xl overflow-hidden border border-brand-gold bg-brand-dark p-2 flex items-center justify-center">
+                            <img id="admin-preview-logo-pic" src="WhatsApp Image 2026-07-07 at 23.22.44.jpeg" alt="Preview da Logo" class="h-full w-auto object-contain" onerror="this.src='https://placehold.co/220x60/1E120C/FCEFD2?text=TURRA'">
+                        </div>
+                        
+                        <div class="relative">
+                            <input type="file" id="admin-logo-pic-input" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
+                            <label for="admin-logo-pic-input" class="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 bg-brand-light hover:bg-brand-cream border border-brand-cream text-brand-dark text-xs font-semibold uppercase tracking-wider rounded-xl transition-all">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                                <span>Alterar Logo</span>
+                            </label>
+                        </div>
+                        <button onclick="resetLogo()" class="text-[10px] text-brand-accent hover:underline block mx-auto">Restaurar Original</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Services, Hours, Address & Social Links Customization -->
+            <div class="lg:col-span-8 space-y-8">
+                
+                <!-- Services Customization Table -->
+                <div class="bg-white p-6 rounded-3xl border border-brand-cream/80 shadow-sm space-y-4">
+                    <div class="border-b border-brand-cream/60 pb-3 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-turra-serif text-lg font-bold text-brand-dark flex items-center gap-2">
+                                <i class="fa-solid fa-scissors text-brand-accent"></i>
+                                <span>Serviços & Valores</span>
+                            </h3>
+                            <p class="text-[10px] text-brand-slate">Altere os nomes, preços e tempos de duração dos seus procedimentos.</p>
+                        </div>
+                    </div>
+
+                    <!-- Services Table/List -->
+                    <div id="admin-services-list" class="space-y-4">
+                        <!-- Filled by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Working Hours Customization Panel -->
+                <div class="bg-white p-6 rounded-3xl border border-brand-cream/80 shadow-sm space-y-6">
+                    <div class="border-b border-brand-cream/60 pb-3">
+                        <h3 class="font-turra-serif text-lg font-bold text-brand-dark flex items-center gap-2">
+                            <i class="fa-regular fa-clock text-brand-accent"></i>
+                            <span>Horários de Agendamento (Slots)</span>
+                        </h3>
+                        <p class="text-[10px] text-brand-slate">Adicione ou remova os horários disponíveis para agendamentos.</p>
+                    </div>
+
+                    <!-- Current Hours Grid -->
+                    <div id="admin-hours-grid" class="flex flex-wrap gap-2">
+                        <!-- Filled by JavaScript -->
+                    </div>
+
+                    <!-- Add Hour Form -->
+                    <div class="flex items-center gap-2 max-w-xs pt-2">
+                        <input type="time" id="admin-new-hour-input" class="px-4 py-2.5 bg-brand-light rounded-xl border border-brand-cream focus:border-brand-gold focus:outline-none text-sm font-semibold">
+                        <button onclick="addNewHourSlot()" class="px-4 py-2.5 bg-brand-dark hover:bg-brand-accent text-brand-light text-xs font-bold uppercase tracking-wider rounded-xl transition-all">
+                            Adicionar Hora
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Footer Details Panel -->
+                <div class="bg-white p-6 rounded-3xl border border-brand-cream/80 shadow-sm space-y-6">
+                    <div class="border-b border-brand-cream/60 pb-3">
+                        <h3 class="font-turra-serif text-lg font-bold text-brand-dark flex items-center gap-2">
+                            <i class="fa-solid fa-circle-info text-brand-accent"></i>
+                            <span>Contatos, Endereço e Políticas</span>
+                        </h3>
+                        <p class="text-[10px] text-brand-slate">Altere os dados informativos, links de redes sociais e políticas do seu site.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <label for="admin-social-instagram" class="block text-xs font-semibold uppercase tracking-wider text-brand-dark">Link do Instagram</label>
+                            <input type="url" id="admin-social-instagram" onchange="updateSocialLink('instagramLink', this.value)" class="w-full px-4 py-3 bg-brand-light rounded-xl border border-brand-cream focus:border-brand-gold focus:outline-none text-sm font-medium text-brand-dark" placeholder="https://instagram.com/seu_perfil">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="admin-social-facebook" class="block text-xs font-semibold uppercase tracking-wider text-brand-dark">Link do Facebook</label>
+                            <input type="url" id="admin-social-facebook" onchange="updateSocialLink('facebookLink', this.value)" class="w-full px-4 py-3 bg-brand-light rounded-xl border border-brand-cream focus:border-brand-gold focus:outline-none text-sm font-medium text-brand-dark" placeholder="https://facebook.com/sua_pagina">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="admin-social-whatsapp" class="block text-xs font-semibold uppercase tracking-wider text-brand-dark">Número do WhatsApp (Apenas Números com DDD, Ex: 5516996269345)</label>
+                            <input type="text" id="admin-social-whatsapp" onchange="updateSocialLink('whatsappNumber', this.value)" class="w-full px-4 py-3 bg-brand-light rounded-xl border border-brand-cream focus:border-brand-gold focus:outline-none text-sm font-medium text-brand-dark" placeholder="5516996269345">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="admin-footer-hours" class="block text-xs font-semibold uppercase tracking-wider text-brand-dark">Horário de Funcionamento (Use quebras de linha)</label>
+                            <textarea id="admin-footer-hours" rows="3" onchange="updateFooterInfo('footerHours', this.value)" class="w-full px-4 py-3 bg-brand-light rounded-xl border border-brand-cream focus:border-brand-gold focus:outline-none text-sm font-medium text-brand-dark" placeholder="Terça a Sexta: 09h às 19h&#13;Sábado: 09h às 17h&#13;Domingos e Segundas: Fechado"></textarea>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label for="admin-footer-address" class="block text-xs font-semibold uppercase tracking-wider text-brand-dark">Endereço de Atendimento</label>
+                            <input type="text" id="admin-footer-address" onchange="updateFooterInfo('footerAddress', this.value)" class="w-full px-4 py-3 bg-brand-light rounded-xl border border-brand-cream focus:border-brand-gold focus:outline-none text-sm font-medium text-brand-dark" placeholder="Atendimento em Espaço Comercial Físico.">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="admin-cancellation-policy" class="block text-xs font-semibold uppercase tracking-wider text-brand-dark">Diretriz / Política de Cancelamento</label>
+                            <textarea id="admin-cancellation-policy" rows="2" onchange="updateFooterInfo('cancellationPolicy', this.value)" class="w-full px-4 py-3 bg-brand-light rounded-xl border border-brand-cream focus:border-brand-gold focus:outline-none text-sm font-medium text-brand-dark" placeholder="O cancelamento ou reagendamento deve ser feito com até 2 dias de antecedência."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Custom Toast Notification System -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Custom Scheduler Engine & Core Logic scripts -->
+    <script>
+        // Default Services Data Setup
+        const defaultServices = {
+            "1": { name: "Alongamento de Unhas em Gel", price: 180, duration: 150 },
+            "2": { name: "Manutenção de Alongamento", price: 130, duration: 105 },
+            "3": { name: "Banho de Gel / Blindagem", price: 110, duration: 75 },
+            "4": { name: "Esmaltação Semipermanente", price: 70, duration: 60 },
+            "5": { name: "Nail Art Elaborada (Adicional)", price: 40, duration: 30 },
+            "6": { name: "Cutilagem & Lixamento", price: 45, duration: 45 }
+        };
+
+        const defaultTimeSlots = ["09:00", "10:30", "13:00", "14:30", "16:00", "17:30"];
+
+        // State Management
+        let appState = {
+            services: {},
+            selectedServices: [],
+            currentStep: 1,
+            selectedDate: null,
+            selectedTimeSlot: null,
+            calendarYear: 2026,
+            calendarMonth: 6, // Julho (0-indexado)
+            registeredBookings: [],
+            timeSlots: [],
+            profilePic: "WhatsApp Image 2026-07-07 at 23.22.44.jpeg",
+            logo: "WhatsApp Image 2026-07-07 at 23.22.44.jpeg",
+            footerHours: "Terça a Sexta: 09h às 19h\nSábado: 09h às 17h\nDomingos e Segundas: Fechado",
+            footerAddress: "Atendimento em Espaço Comercial Físico.",
+            cancellationPolicy: "O cancelamento ou reagendamento deve ser feito com até 2 dias de antecedência.",
+            instagramLink: "https://instagram.com",
+            facebookLink: "https://facebook.com",
+            whatsappNumber: "5516996269345"
+        };
+
+        // On window load
+        window.onload = function() {
+            // Load saved settings from localStorage or initialize with defaults
+            loadStateFromStorage();
+            
+            updateLocalStorageDashboard();
+            renderServicesCatalog();
+            renderSelectedServicesList();
+            renderCalendar();
+            updateFooterDisplay();
+            updatePolicyDisplay();
+            
+            // Set input phone mask helper if desired
+            const phoneInput = document.getElementById('client-phone');
+            phoneInput.addEventListener('input', function(e) {
+                let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+                e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+            });
+        };
+
+        // Load persisted state values from LocalStorage
+        function loadStateFromStorage() {
+            // 1. Services Loading
+            const storedServices = localStorage.getItem("turra_custom_services");
+            if (storedServices) {
+                appState.services = JSON.parse(storedServices);
+            } else {
+                appState.services = JSON.parse(JSON.stringify(defaultServices)); // Deep copy
+            }
+
+            // 2. Time Slots Loading
+            const storedSlots = localStorage.getItem("turra_custom_slots");
+            if (storedSlots) {
+                appState.timeSlots = JSON.parse(storedSlots);
+            } else {
+                appState.timeSlots = [...defaultTimeSlots];
+            }
+
+            // 3. Profile Pic Loading
+            const storedProfilePic = localStorage.getItem("turra_custom_profile_pic");
+            if (storedProfilePic) {
+                appState.profilePic = storedProfilePic;
+            } else {
+                appState.profilePic = "WhatsApp Image 2026-07-07 at 23.22.44.jpeg";
+            }
+
+            // 3.5. Logo Image Loading
+            const storedLogo = localStorage.getItem("turra_custom_logo");
+            if (storedLogo) {
+                appState.logo = storedLogo;
+            } else {
+                appState.logo = "WhatsApp Image 2026-07-07 at 23.22.44.jpeg";
+            }
+            updateFrontendImages();
+
+            // 4. Bookings Loading
+            if (localStorage.getItem("turra_bookings")) {
+                appState.registeredBookings = JSON.parse(localStorage.getItem("turra_bookings"));
+            }
+
+            // 5. Footer info Loading
+            const storedFooterHours = localStorage.getItem("turra_custom_footer_hours");
+            if (storedFooterHours !== null) {
+                appState.footerHours = storedFooterHours;
+            }
+
+            const storedFooterAddress = localStorage.getItem("turra_custom_footer_address");
+            if (storedFooterAddress !== null) {
+                appState.footerAddress = storedFooterAddress;
+            }
+
+            // 6. Cancellation Policy Loading
+            const storedPolicy = localStorage.getItem("turra_custom_cancellation_policy");
+            if (storedPolicy !== null) {
+                appState.cancellationPolicy = storedPolicy;
+            }
+
+            // 7. Social Links Loading
+            const storedInstagram = localStorage.getItem("turra_custom_instagram");
+            if (storedInstagram !== null) {
+                appState.instagramLink = storedInstagram;
+            }
+
+            const storedFacebook = localStorage.getItem("turra_custom_facebook");
+            if (storedFacebook !== null) {
+                appState.facebookLink = storedFacebook;
+            }
+
+            const storedWhatsappNum = localStorage.getItem("turra_custom_whatsapp_num");
+            if (storedWhatsappNum !== null) {
+                appState.whatsappNumber = storedWhatsappNum;
+            }
+        }
+
+        // Apply updated image assets throughout layout
+        function updateFrontendImages() {
+            // Profile Pictures
+            const profileDisplay = document.getElementById('display-profile-pic');
+            if (profileDisplay) profileDisplay.src = appState.profilePic;
+            
+            const adminProfilePreview = document.getElementById('admin-preview-profile-pic');
+            if (adminProfilePreview) adminProfilePreview.src = appState.profilePic;
+            
+            // Logos
+            const headerLogo = document.getElementById('header-logo-img');
+            if (headerLogo) headerLogo.src = appState.logo;
+            
+            const footerLogo = document.getElementById('footer-logo-img');
+            if (footerLogo) footerLogo.src = appState.logo;
+            
+            const adminLogoPreview = document.getElementById('admin-preview-logo-pic');
+            if (adminLogoPreview) adminLogoPreview.src = appState.logo;
+        }
+
+        // Update operational footer contact elements and social links
+        function updateFooterDisplay() {
+            const hoursDisplay = document.getElementById('footer-hours-display');
+            if (hoursDisplay) {
+                hoursDisplay.innerHTML = appState.footerHours.replace(/\n/g, '<br>');
+            }
+            
+            const addressDisplay = document.getElementById('footer-address-display');
+            if (addressDisplay) {
+                addressDisplay.innerHTML = `<i class="fa-solid fa-location-dot text-brand-gold mr-2"></i> ${appState.footerAddress}`;
+            }
+
+            // Dynamic Social Media Links targeting icons
+            const instaLink = document.getElementById('footer-instagram');
+            if (instaLink) {
+                instaLink.href = appState.instagramLink || '#';
+            }
+
+            const fbLink = document.getElementById('footer-facebook');
+            if (fbLink) {
+                fbLink.href = appState.facebookLink || '#';
+            }
+
+            const waLink = document.getElementById('footer-whatsapp');
+            if (waLink) {
+                waLink.href = `https://wa.me/${appState.whatsappNumber}`;
+            }
+        }
+
+        // Update policy display under calendar section
+        function updatePolicyDisplay() {
+            const policyText = document.getElementById('policy-display-text');
+            if (policyText) {
+                policyText.textContent = appState.cancellationPolicy;
+            }
+        }
+
+        // Custom Toast system
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `p-4 rounded-xl shadow-lg border text-xs font-semibold tracking-wide flex items-center gap-3 transition-all duration-300 transform translate-y-2 pointer-events-auto ${
+                type === 'success' 
+                ? 'bg-brand-dark text-brand-light border-brand-gold/30' 
+                : 'bg-red-50 text-red-900 border-red-200'
+            }`;
+            
+            const icon = type === 'success' ? 'fa-circle-check text-brand-gold' : 'fa-circle-exclamation text-red-600';
+            toast.innerHTML = `<i class="fa-solid ${icon} text-lg"></i> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Toggle mobile hamburger menu drawer
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
+        // Toggle FAQ Accordions
+        function toggleFAQ(button) {
+            const answer = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            
+            answer.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
+        // Dynamic Services Grid Render on home section
+        function renderServicesCatalog() {
+            const gridContainer = document.getElementById('services-grid');
+            gridContainer.innerHTML = '';
+
+            Object.keys(appState.services).forEach(id => {
+                const item = appState.services[id];
+                const isSelected = appState.selectedServices.includes(id);
+                
+                const cardHtml = `
+                    <div class="service-card group bg-brand-light hover:bg-brand-cream/30 p-6 rounded-2xl border ${isSelected ? 'ring-2 ring-brand-gold bg-brand-cream/40' : 'border-brand-cream hover:border-brand-gold/50'} transition-all duration-300 flex flex-col justify-between" data-id="${id}">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="p-3 bg-white rounded-xl text-brand-accent shadow-sm group-hover:bg-brand-dark group-hover:text-brand-light transition-colors">
+                                    <i class="${getServiceIcon(id)} text-xl"></i>
+                                </span>
+                                <div class="text-right">
+                                    <span class="block text-xs uppercase tracking-widest text-brand-slate">Preço</span>
+                                    <span class="font-turra-serif text-xl font-bold text-brand-dark">R$ ${item.price.toFixed(2)}</span>
+                                </div>
+                            </div>
+                            <h3 class="font-turra-serif text-xl font-semibold text-brand-dark mb-2">${item.name}</h3>
+                            <p class="text-xs text-brand-slate mb-4 flex items-center gap-2">
+                                <i class="fa-regular fa-clock"></i> ${Math.floor(item.duration/60)}h ${item.duration%60}m
+                            </p>
+                        </div>
+                        <button onclick="toggleServiceSelection('${id}')" class="btn-select-service w-full py-2.5 rounded-xl border border-brand-dark text-brand-dark group-hover:bg-brand-dark group-hover:text-brand-light transition-all text-xs font-semibold uppercase tracking-wider flex items-center justify-center space-x-2 ${isSelected ? 'bg-brand-dark text-brand-light' : ''}">
+                            <i class="fa-solid ${isSelected ? 'fa-check' : 'fa-plus'}"></i>
+                            <span>${isSelected ? 'Selecionado' : 'Selecionar Serviço'}</span>
+                        </button>
+                    </div>
+                `;
+                gridContainer.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        // Helper icon assigner based on index / key
+        function getServiceIcon(id) {
+            const icons = {
+                "1": "fa-solid fa-wand-magic-sparkles",
+                "2": "fa-solid fa-rotate",
+                "3": "fa-solid fa-shield",
+                "4": "fa-solid fa-bottle-droplet",
+                "5": "fa-solid fa-palette",
+                "6": "fa-solid fa-hand"
+            };
+            return icons[id] || "fa-solid fa-sparkles";
+        }
+
+        // Add/Remove Services Selected
+        function toggleServiceSelection(serviceId) {
+            const index = appState.selectedServices.indexOf(serviceId);
+
+            if (index === -1) {
+                appState.selectedServices.push(serviceId);
+                showToast(`Serviço "${appState.services[serviceId].name}" selecionado!`);
+            } else {
+                appState.selectedServices.splice(index, 1);
+                showToast(`Removido: "${appState.services[serviceId].name}"`);
+            }
+
+            renderServicesCatalog();
+            renderSelectedServicesList();
+        }
+
+        // Render selected items under Checkout step
+        function renderSelectedServicesList() {
+            const listContainer = document.getElementById('selected-services-list');
+            const totalCard = document.getElementById('checkout-total-card');
+            const totalPriceEl = document.getElementById('checkout-total-price');
+            
+            if (appState.selectedServices.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-8 text-brand-slate border border-dashed border-brand-cream rounded-2xl">
+                        <i class="fa-regular fa-hand text-3xl text-brand-gold mb-2 block"></i>
+                        <p class="text-sm font-medium">Nenhum serviço selecionado ainda.</p>
+                        <p class="text-xs text-brand-slate/80 mt-1">Selecione pelo menos um procedimento no menu acima.</p>
+                        <a href="#servicos" class="inline-block mt-4 text-xs font-semibold uppercase tracking-wider bg-brand-dark text-brand-light px-4 py-2 rounded-lg hover:bg-brand-accent transition-colors">Ver Catálogo de Serviços</a>
+                    </div>
+                `;
+                totalCard.classList.add('hidden');
+                return;
+            }
+
+            totalCard.classList.remove('hidden');
+            let total = 0;
+            let htmlContent = `<div class="space-y-2">`;
+
+            appState.selectedServices.forEach(id => {
+                const item = appState.services[id];
+                total += item.price;
+                htmlContent += `
+                    <div class="flex justify-between items-center bg-brand-light/70 p-4 rounded-xl border border-brand-cream/60">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-brand-accent"><i class="fa-regular fa-circle-check"></i></span>
+                            <div>
+                                <h4 class="text-xs font-semibold text-brand-dark uppercase tracking-wider">${item.name}</h4>
+                                <p class="text-[10px] text-brand-slate flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${Math.floor(item.duration/60)}h ${item.duration%60}m</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <span class="font-semibold text-sm text-brand-dark">R$ ${item.price.toFixed(2)}</span>
+                            <button onclick="toggleServiceSelection('${id}')" class="text-xs text-red-500 hover:text-red-700 p-1" title="Remover"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            htmlContent += `</div>`;
+            listContainer.innerHTML = htmlContent;
+            totalPriceEl.textContent = `R$ ${total.toFixed(2)}`;
+            
+            // Sync current state text summaries as well
+            document.getElementById('summary-total').textContent = `R$ ${total.toFixed(2)}`;
+        }
+
+        // Navigation Steps handler
+        function goToStep(step) {
+            // Hide all sections
+            document.getElementById('step-section-1').classList.add('hidden');
+            document.getElementById('step-section-2').classList.add('hidden');
+            document.getElementById('step-section-3').classList.add('hidden');
+
+            // Reset step indicators visually
+            for(let i=1; i<=3; i++) {
+                const indicator = document.getElementById(`step-${i}-indicator`);
+                indicator.className = "w-10 h-10 rounded-full bg-brand-cream text-brand-slate flex items-center justify-center font-semibold text-sm transition-all";
+            }
+
+            // Highlighting steps sequentially
+            for(let i=1; i<=step; i++) {
+                const ind = document.getElementById(`step-${i}-indicator`);
+                if(i === step) {
+                    ind.className = "w-10 h-10 rounded-full bg-brand-dark text-brand-light flex items-center justify-center font-semibold text-sm transition-all shadow-md ring-2 ring-brand-gold/30";
+                } else {
+                    ind.className = "w-10 h-10 rounded-full bg-brand-gold text-brand-dark flex items-center justify-center font-semibold text-sm transition-all";
+                }
+            }
+
+            // Connecting lines highlights
+            if(step >= 2) document.getElementById('line-step-1').className = "h-[2px] bg-brand-gold flex-1 -mt-5 transition-all";
+            else document.getElementById('line-step-1').className = "h-[2px] bg-brand-cream flex-1 -mt-5 transition-all";
+
+            if(step >= 3) document.getElementById('line-step-2').className = "h-[2px] bg-brand-gold flex-1 -mt-5 transition-all";
+            else document.getElementById('line-step-2').className = "h-[2px] bg-brand-cream flex-1 -mt-5 transition-all";
+
+            // Reveal correct section
+            document.getElementById(`step-section-${step}`).classList.remove('hidden');
+            appState.currentStep = step;
+            
+            // Scroll to booking start
+            document.getElementById('agendamento').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Month Names Portuguese
+        const monthNames = [
+            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        ];
+
+        function renderCalendar() {
+            const calendarDays = document.getElementById('calendar-days');
+            const monthYearText = document.getElementById('calendar-month-year');
+            
+            calendarDays.innerHTML = '';
+            monthYearText.textContent = `${monthNames[appState.calendarMonth]} ${appState.calendarYear}`;
+
+            const firstDayIndex = new Date(appState.calendarYear, appState.calendarMonth, 1).getDay();
+            const lastDay = new Date(appState.calendarYear, appState.calendarMonth + 1, 0).getDate();
+
+            // Append empty spacer boxes before first calendar day
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                calendarDays.appendChild(emptyCell);
+            }
+
+            // Append each day cell
+            for (let day = 1; day <= lastDay; day++) {
+                const dayDate = new Date(appState.calendarYear, appState.calendarMonth, day);
+                const dayOfWeek = dayDate.getDay();
+                
+                const dayButton = document.createElement('button');
+                dayButton.type = 'button';
+                dayButton.textContent = day;
+                dayButton.className = "w-full py-2.5 text-xs font-semibold rounded-lg flex items-center justify-center transition-all ";
+                
+                // Current timestamp baseline
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                dayDate.setHours(0,0,0,0);
+
+                // Disable past dates, Sunday (0) and Monday (1)
+                const isPast = dayDate < today;
+                const isOffDay = dayOfWeek === 0 || dayOfWeek === 1;
+
+                if (isPast || isOffDay) {
+                    dayButton.disabled = true;
+                    dayButton.className += "text-gray-300 bg-transparent cursor-not-allowed";
+                } else {
+                    // Check if selected currently
+                    const isSelected = appState.selectedDate && 
+                        appState.selectedDate.getDate() === day && 
+                        appState.selectedDate.getMonth() === appState.calendarMonth && 
+                        appState.selectedDate.getFullYear() === appState.calendarYear;
+
+                    if (isSelected) {
+                        dayButton.className += "bg-brand-dark text-brand-light shadow-md ring-1 ring-brand-gold";
+                    } else {
+                        dayButton.className += "bg-brand-light text-brand-dark hover:bg-brand-cream";
+                    }
+
+                    dayButton.addEventListener('click', () => {
+                        selectBookingDate(new Date(appState.calendarYear, appState.calendarMonth, day));
+                    });
+                }
+
+                calendarDays.appendChild(dayButton);
+            }
+        }
+
+        // Calendar Month controls
+        function prevMonth() {
+            const today = new Date();
+            // Restrict from going behind current month
+            if (appState.calendarYear === today.getFullYear() && appState.calendarMonth <= today.getMonth()) {
+                showToast("Não é possível retroceder para meses passados.", "error");
+                return;
+            }
+            if (appState.calendarMonth === 0) {
+                appState.calendarMonth = 11;
+                appState.calendarYear--;
+            } else {
+                appState.calendarMonth--;
+            }
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            if (appState.calendarMonth === 11) {
+                appState.calendarMonth = 0;
+                appState.calendarYear++;
+            } else {
+                appState.calendarMonth++;
+            }
+            renderCalendar();
+        }
+
+        // Date selection event handler
+        function selectBookingDate(date) {
+            appState.selectedDate = date;
+            appState.selectedTimeSlot = null; // Reset time when date changes
+            
+            // Format for preview
+            const dayStr = date.getDate().toString().padStart(2, '0');
+            const monthStr = monthNames[date.getMonth()];
+            document.getElementById('selected-date-preview').textContent = `Dia Escolhido: ${dayStr} de ${monthStr}`;
+
+            renderCalendar();
+            renderTimeSlots();
+        }
+
+        // Render Time Slots dynamically with collision prevention
+        function renderTimeSlots() {
+            const container = document.getElementById('time-slots-grid');
+            container.innerHTML = '';
+
+            if (!appState.selectedDate) {
+                container.innerHTML = `<p class="col-span-3 text-xs text-brand-slate py-4 italic text-center">Por favor, escolha um dia primeiro.</p>`;
+                return;
+            }
+
+            const dayStr = appState.selectedDate.getDate().toString().padStart(2, '0');
+            const monthStr = (appState.selectedDate.getMonth() + 1).toString().padStart(2, '0');
+            const dateFormatted = `${dayStr}/${monthStr}/${appState.selectedDate.getFullYear()}`;
+
+            // Render Slots using configuration state
+            appState.timeSlots.forEach(time => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                
+                // Collision Prevention Engine: Match formatted date string AND slot hour
+                const isBooked = appState.registeredBookings.some(b => b.date === dateFormatted && b.time === time);
+                const isSelected = appState.selectedTimeSlot === time;
+                
+                if (isBooked) {
+                    btn.textContent = `${time} (Ocupado)`;
+                    btn.disabled = true;
+                    btn.className = "py-3 bg-red-50/60 text-brand-slate/40 font-medium text-[10px] rounded-xl border border-red-100/40 cursor-not-allowed line-through flex items-center justify-center";
+                } else if (isSelected) {
+                    btn.textContent = time;
+                    btn.className = "py-3 bg-brand-dark text-brand-light font-semibold text-xs rounded-xl shadow-md border border-brand-gold transition-all";
+                } else {
+                    btn.textContent = time;
+                    btn.className = "py-3 bg-white hover:bg-brand-cream/40 border border-brand-cream text-brand-dark font-medium text-xs rounded-xl transition-all";
+                }
+
+                if (!isBooked) {
+                    btn.addEventListener('click', () => {
+                        appState.selectedTimeSlot = time;
+                        renderTimeSlots();
+                        showToast(`Horário escolhido: ${time}!`);
+                    });
+                }
+
+                container.appendChild(btn);
+            });
+        }
+
+        // Validate selection step 2 and go next
+        function validateStep2AndProceed() {
+            if (!appState.selectedDate) {
+                showToast("Por favor, selecione uma data válida no calendário.", "error");
+                return;
+            }
+            if (!appState.selectedTimeSlot) {
+                showToast("Por favor, escolha um horário conveniente.", "error");
+                return;
+            }
+
+            // Render final Checkout Info
+            const selectedServicesNames = appState.selectedServices.map(id => appState.services[id].name).join(", ");
+            document.getElementById('summary-services-list').textContent = selectedServicesNames;
+            document.getElementById('summary-services-list').title = selectedServicesNames;
+
+            const dayStr = appState.selectedDate.getDate().toString().padStart(2, '0');
+            const monthStr = (appState.selectedDate.getMonth() + 1).toString().padStart(2, '0');
+            const yearStr = appState.selectedDate.getFullYear();
+            
+            document.getElementById('summary-date').textContent = `${dayStr}/${monthStr}/${yearStr}`;
+            document.getElementById('summary-time').textContent = appState.selectedTimeSlot;
+
+            goToStep(3);
+        }
+
+        function handleBookingSubmit(event) {
+            event.preventDefault();
+
+            const clientName = document.getElementById('client-name').value.trim();
+            const clientPhone = document.getElementById('client-phone').value.trim();
+            const clientNotes = document.getElementById('client-notes').value.trim();
+
+            if (!clientName || !clientPhone) {
+                showToast("Por favor, preencha os campos obrigatórios.", "error");
+                return;
+            }
+
+            // Calculation data
+            let totalCost = 0;
+            const servicesSelectedObj = appState.selectedServices.map(id => {
+                totalCost += appState.services[id].price;
+                return appState.services[id].name;
+            });
+
+            const dayStr = appState.selectedDate.getDate().toString().padStart(2, '0');
+            const monthStr = (appState.selectedDate.getMonth() + 1).toString().padStart(2, '0');
+            const dateFormatted = `${dayStr}/${monthStr}/${appState.selectedDate.getFullYear()}`;
+
+            // Create appointment unique ID
+            const newBooking = {
+                id: Date.now(),
+                clientName: clientName,
+                clientPhone: clientPhone,
+                services: servicesSelectedObj,
+                date: dateFormatted,
+                time: appState.selectedTimeSlot,
+                notes: clientNotes,
+                total: totalCost
+            };
+
+            // Save in current session memory & localStorage
+            appState.registeredBookings.unshift(newBooking);
+            localStorage.setItem("turra_bookings", JSON.stringify(appState.registeredBookings));
+
+            // Generate beautifully structured WhatsApp text
+            let textMessage = `Olá TURRA nails design! Gostaria de confirmar meu agendamento:\n\n`;
+            textMessage += `💅 *Cliente:* ${clientName}\n`;
+            textMessage += `📞 *WhatsApp:* ${clientPhone}\n`;
+            textMessage += `🗓️ *Data:* ${dateFormatted}\n`;
+            textMessage += `⏰ *Horário:* ${appState.selectedTimeSlot}\n\n`;
+            textMessage += `*Serviços Escolhidos:*\n`;
+            
+            servicesSelectedObj.forEach((srv) => {
+                textMessage += `- ${srv}\n`;
+            });
+            
+            textMessage += `\n💰 *Total Estimado:* R$ ${totalCost.toFixed(2)}\n`;
+            
+            if (clientNotes) {
+                textMessage += `📝 *Nota:* ${clientNotes}\n`;
+            }
+            
+            textMessage += `\n_Enviado através do site de agendamentos._`;
+
+            // WhatsApp Target Phone configured via Admin Panel (or default fallback)
+            const whatsappNumber = appState.whatsappNumber || "5516996269345"; 
+            const encodedText = encodeURIComponent(textMessage);
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedText}`;
+
+            // Fire Success Visual Screen / Redirect
+            showToast("Agendamento efetuado com sucesso! Redirecionando...", "success");
+
+            // Open WhatsApp
+            setTimeout(() => {
+                window.open(whatsappUrl, '_blank');
+            }, 1000);
+
+            // Reset selection state
+            appState.selectedServices = [];
+            appState.selectedDate = null;
+            appState.selectedTimeSlot = null;
+
+            // Update local dashboard representation
+            updateLocalStorageDashboard();
+            renderServicesCatalog();
+
+            // Clear inputs
+            document.getElementById('client-name').value = '';
+            document.getElementById('client-phone').value = '';
+            document.getElementById('client-notes').value = '';
+
+            // Return to step 1
+            renderSelectedServicesList();
+            goToStep(1);
+        }
+
+        // Cancel / Delete local booking session & notify designer via WhatsApp
+        function cancelLocalBooking(id) {
+            const bookingToCancel = appState.registeredBookings.find(b => b.id === id);
+            if (!bookingToCancel) return;
+
+            // Generate beautifully structured cancellation text
+            let textMessage = `Olá TURRA nails design! Gostaria de *DESMARCAR* meu agendamento:\n\n`;
+            textMessage += `❌ *SOLICITAÇÃO DE CANCELAMENTO*\n\n`;
+            textMessage += `💅 *Cliente:* ${bookingToCancel.clientName}\n`;
+            textMessage += `🗓️ *Data:* ${bookingToCancel.date}\n`;
+            textMessage += `⏰ *Horário:* ${bookingToCancel.time}\n`;
+            textMessage += `✂️ *Procedimentos:* ${bookingToCancel.services.join(", ")}\n`;
+            textMessage += `💰 *Valor:* R$ ${bookingToCancel.total.toFixed(2)}\n\n`;
+            textMessage += `_Política:_ ${appState.cancellationPolicy}`;
+
+            const whatsappNumber = appState.whatsappNumber || "5516996269345";
+            const encodedText = encodeURIComponent(textMessage);
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedText}`;
+
+            // Remove from state & localStorage
+            appState.registeredBookings = appState.registeredBookings.filter(b => b.id !== id);
+            localStorage.setItem("turra_bookings", JSON.stringify(appState.registeredBookings));
+            
+            // Refresh Dashboard UI and Slot mappings
+            updateLocalStorageDashboard();
+            if (appState.selectedDate) {
+                renderTimeSlots();
+            }
+
+            showToast("Desmarcando... Abrindo o WhatsApp para enviar a notificação.", "success");
+
+            // Redirect to WhatsApp
+            setTimeout(() => {
+                window.open(whatsappUrl, '_blank');
+            }, 1200);
+        }
+
+        // Local Dashboard updater
+        function updateLocalStorageDashboard() {
+            const container = document.getElementById('local-appointments-container');
+            
+            if (appState.registeredBookings.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-10 bg-brand-light/30 border border-brand-cream/60 rounded-3xl">
+                        <i class="fa-regular fa-calendar text-4xl text-brand-slate/40 mb-3 block"></i>
+                        <p class="text-sm font-medium text-brand-dark">Você não possui agendamentos salvos neste navegador.</p>
+                        <p class="text-xs text-brand-slate/70 mt-1">Realize seu primeiro agendamento usando nosso assistente.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let htmlContent = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">`;
+
+            appState.registeredBookings.forEach(booking => {
+                htmlContent += `
+                    <div class="bg-brand-light/40 border border-brand-cream rounded-2xl p-5 space-y-3 relative hover:shadow-gold-sm transition-all">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[10px] uppercase font-bold tracking-wider text-brand-accent px-2 py-1 bg-brand-glow border border-brand-gold/20 rounded-md">Status: Aguardando Confirmação</span>
+                                <h4 class="font-turra-serif text-lg font-bold text-brand-dark mt-2">${booking.clientName}</h4>
+                            </div>
+                            <button onclick="cancelLocalBooking(${booking.id})" class="text-xs text-red-500 hover:text-red-700 font-medium px-2 py-1 rounded bg-white hover:bg-red-50 transition-colors border border-red-200">
+                                <i class="fa-solid fa-calendar-xmark"></i> Desmarcar
+                            </button>
+                        </div>
+                        
+                        <div class="text-xs text-brand-slate space-y-1">
+                            <p><i class="fa-regular fa-calendar-check text-brand-gold"></i> <strong class="text-brand-dark">Data:</strong> ${booking.date} às ${booking.time}</p>
+                            <p class="truncate"><i class="fa-solid fa-scissors text-brand-gold"></i> <strong class="text-brand-dark">Procedimentos:</strong> ${booking.services.join(", ")}</p>
+                            <p><i class="fa-solid fa-calculator text-brand-gold"></i> <strong class="text-brand-dark">Valor Estimado:</strong> R$ ${booking.total.toFixed(2)}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            htmlContent += `</div>`;
+            container.innerHTML = htmlContent;
+        }
+
+        // Admin LOGIN/VALIDATION Functions
+        function openAdminLogin() {
+            document.getElementById('admin-login-modal').classList.remove('hidden');
+            document.getElementById('admin-passcode').focus();
+        }
+
+        // Close passcode screen
+        function closeAdminLogin() {
+            document.getElementById('admin-login-modal').classList.add('hidden');
+            document.getElementById('admin-passcode').value = '';
+        }
+
+        // Validate secret passcode
+        function validateAdminLogin() {
+            const code = document.getElementById('admin-passcode').value.trim();
+            if (code === 'turra2026') {
+                closeAdminLogin();
+                openAdminPanel();
+                showToast("Acesso autorizado!");
+            } else {
+                showToast("Senha incorreta. Tente novamente.", "error");
+            }
+        }
+
+        // Open Professional Configuration Panel
+        function openAdminPanel() {
+            document.getElementById('admin-panel').classList.remove('hidden');
+            renderAdminServicesList();
+            renderAdminHoursGrid();
+
+            // Populate Admin Details inputs
+            document.getElementById('admin-footer-hours').value = appState.footerHours;
+            document.getElementById('admin-footer-address').value = appState.footerAddress;
+            document.getElementById('admin-cancellation-policy').value = appState.cancellationPolicy;
+
+            // Populate Social links in Admin Panel inputs
+            document.getElementById('admin-social-instagram').value = appState.instagramLink || '';
+            document.getElementById('admin-social-facebook').value = appState.facebookLink || '';
+            document.getElementById('admin-social-whatsapp').value = appState.whatsappNumber || '';
+        }
+
+        // Save & Exit Admin Panel
+        function closeAdminPanel() {
+            document.getElementById('admin-panel').classList.add('hidden');
+            
+            // Re-render core layout reflecting edits
+            renderServicesCatalog();
+            renderSelectedServicesList();
+            renderTimeSlots();
+            showToast("Alterações aplicadas com sucesso!");
+        }
+
+        // Render editable services list inside the Admin Panel
+        function renderAdminServicesList() {
+            const list = document.getElementById('admin-services-list');
+            list.innerHTML = '';
+
+            Object.keys(appState.services).forEach(id => {
+                const srv = appState.services[id];
+                const itemHtml = `
+                    <div class="bg-brand-light p-4 rounded-2xl border border-brand-cream/80 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                        <div class="md:col-span-5 space-y-1">
+                            <label class="block text-[9px] uppercase font-bold tracking-wider text-brand-accent">Nome do Serviço</label>
+                            <input type="text" value="${srv.name}" onchange="updateAdminServiceField('${id}', 'name', this.value)" class="w-full px-3 py-2 bg-white rounded-lg border border-brand-cream/60 focus:border-brand-gold focus:outline-none text-xs font-semibold text-brand-dark">
+                        </div>
+                        <div class="md:col-span-3 space-y-1">
+                            <label class="block text-[9px] uppercase font-bold tracking-wider text-brand-accent">Preço (R$)</label>
+                            <input type="number" step="0.01" value="${srv.price}" onchange="updateAdminServiceField('${id}', 'price', this.value)" class="w-full px-3 py-2 bg-white rounded-lg border border-brand-cream/60 focus:border-brand-gold focus:outline-none text-xs font-semibold text-brand-dark">
+                        </div>
+                        <div class="md:col-span-4 space-y-1">
+                            <label class="block text-[9px] uppercase font-bold tracking-wider text-brand-accent">Duração (Minutos)</label>
+                            <input type="number" value="${srv.duration}" onchange="updateAdminServiceField('${id}', 'duration', this.value)" class="w-full px-3 py-2 bg-white rounded-lg border border-brand-cream/60 focus:border-brand-gold focus:outline-none text-xs font-semibold text-brand-dark">
+                        </div>
+                    </div>
+                `;
+                list.insertAdjacentHTML('beforeend', itemHtml);
+            });
+        }
+
+        // Handle single inputs changes inside services lists
+        function updateAdminServiceField(id, field, value) {
+            if (field === 'price' || field === 'duration') {
+                appState.services[id][field] = parseFloat(value) || 0;
+            } else {
+                appState.services[id][field] = value;
+            }
+            // Persist
+            localStorage.setItem("turra_custom_services", JSON.stringify(appState.services));
+        }
+
+        // Render current operational hour blocks in settings
+        function renderAdminHoursGrid() {
+            const grid = document.getElementById('admin-hours-grid');
+            grid.innerHTML = '';
+
+            appState.timeSlots.sort().forEach(slot => {
+                const hourTag = document.createElement('div');
+                hourTag.className = "inline-flex items-center gap-2 bg-brand-dark text-brand-light px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm border border-brand-gold/30";
+                hourTag.innerHTML = `
+                    <span>${slot}</span>
+                    <button onclick="removeHourSlot('${slot}')" class="text-red-400 hover:text-red-200 text-xs focus:outline-none" title="Remover Horário">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                `;
+                grid.appendChild(hourTag);
+            });
+        }
+
+        // Add hour slot dynamically
+        function addNewHourSlot() {
+            const input = document.getElementById('admin-new-hour-input');
+            const val = input.value.trim();
+
+            if (!val) {
+                showToast("Escolha um horário válido.", "error");
+                return;
+            }
+
+            if (appState.timeSlots.includes(val)) {
+                showToast("Este horário já está cadastrado.", "error");
+                return;
+            }
+
+            appState.timeSlots.push(val);
+            appState.timeSlots.sort();
+            localStorage.setItem("turra_custom_slots", JSON.stringify(appState.timeSlots));
+            
+            renderAdminHoursGrid();
+            input.value = '';
+            showToast("Novo horário adicionado!");
+        }
+
+        // Remove hour slot dynamically
+        function removeHourSlot(slot) {
+            appState.timeSlots = appState.timeSlots.filter(t => t !== slot);
+            localStorage.setItem("turra_custom_slots", JSON.stringify(appState.timeSlots));
+            renderAdminHoursGrid();
+            showToast(`Horário ${slot} removido.`);
+        }
+
+        // Update operational text blocks and persist
+        function updateFooterInfo(field, value) {
+            appState[field] = value;
+            if (field === 'footerHours') {
+                localStorage.setItem("turra_custom_footer_hours", value);
+                updateFooterDisplay();
+            } else if (field === 'footerAddress') {
+                localStorage.setItem("turra_custom_footer_address", value);
+                updateFooterDisplay();
+            } else if (field === 'cancellationPolicy') {
+                localStorage.setItem("turra_custom_cancellation_policy", value);
+                updatePolicyDisplay();
+            }
+        }
+
+        // Update social links from admin inputs
+        function updateSocialLink(field, value) {
+            appState[field] = value;
+            if (field === 'instagramLink') {
+                localStorage.setItem("turra_custom_instagram", value);
+            } else if (field === 'facebookLink') {
+                localStorage.setItem("turra_custom_facebook", value);
+            } else if (field === 'whatsappNumber') {
+                // Clean non-digits from WhatsApp input for safe redirection target APIs
+                const cleanNum = value.replace(/\D/g, '');
+                appState.whatsappNumber = cleanNum;
+                localStorage.setItem("turra_custom_whatsapp_num", cleanNum);
+            }
+            updateFooterDisplay();
+        }
+
+        // Handle custom profile picture local storage save and load
+        function handleProfilePicUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Pic = e.target.result;
+                appState.profilePic = base64Pic;
+                localStorage.setItem("turra_custom_profile_pic", base64Pic);
+                
+                updateFrontendImages();
+                showToast("Foto de perfil alterada com sucesso!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Restore Default Banner Picture settings
+        function resetProfilePic() {
+            appState.profilePic = "WhatsApp Image 2026-07-07 at 23.22.44.jpeg";
+            localStorage.removeItem("turra_custom_profile_pic");
+            updateFrontendImages();
+            showToast("Foto restaurada para a original.");
+        }
+
+        // Handle custom logo local storage save and load
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Logo = e.target.result;
+                appState.logo = base64Logo;
+                localStorage.setItem("turra_custom_logo", base64Logo);
+                
+                updateFrontendImages();
+                showToast("Logo do site alterada com sucesso!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Restore Default Logo Picture settings
+        function resetLogo() {
+            appState.logo = "WhatsApp Image 2026-07-07 at 23.22.44.jpeg";
+            localStorage.removeItem("turra_custom_logo");
+            updateFrontendImages();
+            showToast("Logo restaurada para a original.");
+        }
+    </script>
+</body>
+</html>
