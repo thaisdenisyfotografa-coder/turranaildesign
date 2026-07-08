@@ -403,7 +403,7 @@
         <div class="max-w-4xl mx-auto px-4">
             <div class="text-center max-w-xl mx-auto mb-8 space-y-3">
                 <h2 class="font-turra-serif text-3xl font-bold text-brand-dark">Seus Agendamentos Realizados</h2>
-                <p class="text-brand-slate text-xs uppercase tracking-wider">Histórico salvo localmente no seu aparelho</p>
+                <p class="text-brand-slate text-xs uppercase tracking-wider">Sincronizado automaticamente em tempo real</p>
                 <div class="w-12 h-0.5 bg-brand-gold mx-auto"></div>
             </div>
 
@@ -771,31 +771,49 @@
     <!-- Custom Toast Notification System -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- Custom Scheduler Engine & Core Logic scripts -->
-    <script>
-        // Default Services Data Setup
-        const defaultServices = {
-            "1": { name: "Alongamento de Unhas em Gel", price: 180, duration: 150 },
-            "2": { name: "Manutenção de Alongamento", price: 130, duration: 105 },
-            "3": { name: "Banho de Gel / Blindagem", price: 110, duration: 75 },
-            "4": { name: "Esmaltação Semipermanente", price: 70, duration: 60 },
-            "5": { name: "Nail Art Elaborada (Adicional)", price: 40, duration: 30 },
-            "6": { name: "Cutilagem & Lixamento", price: 45, duration: 45 }
+    <!-- Firebase SDK Modules Integration and Scheduler Logic -->
+    <!-- hhttps://www.gstatic.com/firebasejs/11.6.1/ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Configuration (from capture)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBalHzK8RAxMLPYK6fqb8pGstZCGFaDuUs",
+            authDomain: "turra-nails-design.firebaseapp.com",
+            projectId: "turra-nails-design",
+            storageBucket: "turra-nails-design.firebasestorage.app",
+            messagingSenderId: "879812320954",
+            appId: "1:879812320954:web:813656fea42ba0c3d96c83",
+            measurementId: "G-5N8Z10X9DM"
         };
 
-        const defaultTimeSlots = ["09:00", "10:30", "13:00", "14:30", "16:00", "17:30"];
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'turra-nails-design-app';
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
 
         // State Management
         let appState = {
-            services: {},
+            services: {
+                "1": { name: "Alongamento de Unhas em Gel", price: 180, duration: 150 },
+                "2": { name: "Manutenção de Alongamento", price: 130, duration: 105 },
+                "3": { name: "Banho de Gel / Blindagem", price: 110, duration: 75 },
+                "4": { name: "Esmaltação Semipermanente", price: 70, duration: 60 },
+                "5": { name: "Nail Art Elaborada (Adicional)", price: 40, duration: 30 },
+                "6": { name: "Cutilagem & Lixamento", price: 45, duration: 45 }
+            },
             selectedServices: [],
             currentStep: 1,
             selectedDate: null,
             selectedTimeSlot: null,
             calendarYear: 2026,
-            calendarMonth: 6, // Julho (0-indexado)
+            calendarMonth: 6, // Julho (0-indexed)
             registeredBookings: [],
-            timeSlots: [],
+            timeSlots: ["09:00", "10:30", "13:00", "14:30", "16:00", "17:30"],
             profilePic: "WhatsApp Image 2026-07-07 at 23.22.44.jpeg",
             logo: "WhatsApp Image 2026-07-07 at 23.22.44.jpeg",
             footerHours: "Terça a Sexta: 09h às 19h\nSábado: 09h às 17h\nDomingos e Segundas: Fechado",
@@ -806,110 +824,179 @@
             whatsappNumber: "5516996269345"
         };
 
-        // On window load
-        window.onload = function() {
-            // Load saved settings from localStorage or initialize with defaults
-            loadStateFromStorage();
-            
-            updateLocalStorageDashboard();
-            renderServicesCatalog();
-            renderSelectedServicesList();
-            renderCalendar();
-            updateFooterDisplay();
-            updatePolicyDisplay();
-            
-            // Set input phone mask helper if desired
+        let authUser = null;
+        let firebaseSyncStarted = false;
+
+        // On window load, connect to Firebase
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Safe timeout: if Firebase fails to sync within 3 seconds, load fallback local storage
+            setTimeout(() => {
+                if (!firebaseSyncStarted) {
+                    console.warn("Conexão lenta ou indisponível. Carregando em modo local.");
+                    loadStateFromStorage();
+                    renderAll();
+                }
+            }, 3000);
+
+            try {
+                // Anonymous Authentication for writing to Firestore safely
+                const userCred = await signInAnonymously(auth);
+                authUser = userCred.user;
+                console.log("Firebase autenticado com sucesso anonimamente: ", authUser.uid);
+                firebaseSyncStarted = true;
+                await syncWithFirebase();
+            } catch (err) {
+                console.warn("Erro de autenticação no Firebase (Tentando sincronizar mesmo assim):", err);
+                // Mesmo sem auth, tentamos sincronizar caso as regras do Firestore estejam públicas (modo teste)
+                firebaseSyncStarted = true;
+                try {
+                    await syncWithFirebase();
+                } catch (dbErr) {
+                    console.error("Falha geral de conexão com a nuvem. Rodando localmente:", dbErr);
+                    loadStateFromStorage();
+                    renderAll();
+                }
+            }
+
+            // Phone mask helper
             const phoneInput = document.getElementById('client-phone');
-            phoneInput.addEventListener('input', function(e) {
-                let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
-                e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function(e) {
+                    let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+                    e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+                });
+            }
+        });
+
+        // Listen to Database Updates in real-time
+        async function syncWithFirebase() {
+            const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config');
+            const bookingsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'bookings');
+
+            // 1. Config and Professional preferences changes
+            onSnapshot(configDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.services) appState.services = data.services;
+                    if (data.timeSlots) appState.timeSlots = data.timeSlots;
+                    if (data.profilePic) appState.profilePic = data.profilePic;
+                    if (data.logo) appState.logo = data.logo;
+                    if (data.footerHours !== undefined) appState.footerHours = data.footerHours;
+                    if (data.footerAddress !== undefined) appState.footerAddress = data.footerAddress;
+                    if (data.cancellationPolicy !== undefined) appState.cancellationPolicy = data.cancellationPolicy;
+                    if (data.instagramLink !== undefined) appState.instagramLink = data.instagramLink;
+                    if (data.facebookLink !== undefined) appState.facebookLink = data.facebookLink;
+                    if (data.whatsappNumber !== undefined) appState.whatsappNumber = data.whatsappNumber;
+
+                    // Sync locally as fallback
+                    saveStateToLocalStorage();
+                    renderAll();
+                } else {
+                    // Initialize empty cloud database document with default state
+                    saveConfigToFirebase();
+                }
+            }, (error) => {
+                console.error("Config Firebase Snap error (Fallback local ativo):", error);
+                loadStateFromStorage();
+                renderAll();
             });
-        };
 
-        // Load persisted state values from LocalStorage
-        function loadStateFromStorage() {
-            // 1. Services Loading
-            const storedServices = localStorage.getItem("turra_custom_services");
-            if (storedServices) {
-                appState.services = JSON.parse(storedServices);
-            } else {
-                appState.services = JSON.parse(JSON.stringify(defaultServices)); // Deep copy
-            }
+            // 2. Real-time slot locking from client bookings collection
+            onSnapshot(bookingsColRef, (querySnapshot) => {
+                const list = [];
+                querySnapshot.forEach((doc) => {
+                    list.push({ id: doc.id, ...doc.data() });
+                });
+                list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                appState.registeredBookings = list;
+                
+                // Refresh views
+                updateLocalStorageDashboard();
+                if (appState.selectedDate) {
+                    renderTimeSlots();
+                }
+            }, (error) => {
+                console.error("Bookings Firebase Snap error:", error);
+            });
+        }
 
-            // 2. Time Slots Loading
-            const storedSlots = localStorage.getItem("turra_custom_slots");
-            if (storedSlots) {
-                appState.timeSlots = JSON.parse(storedSlots);
-            } else {
-                appState.timeSlots = [...defaultTimeSlots];
-            }
-
-            // 3. Profile Pic Loading
-            const storedProfilePic = localStorage.getItem("turra_custom_profile_pic");
-            if (storedProfilePic) {
-                appState.profilePic = storedProfilePic;
-            } else {
-                appState.profilePic = "WhatsApp Image 2026-07-07 at 23.22.44.jpeg";
-            }
-
-            // 3.5. Logo Image Loading
-            const storedLogo = localStorage.getItem("turra_custom_logo");
-            if (storedLogo) {
-                appState.logo = storedLogo;
-            } else {
-                appState.logo = "WhatsApp Image 2026-07-07 at 23.22.44.jpeg";
-            }
-            updateFrontendImages();
-
-            // 4. Bookings Loading
-            if (localStorage.getItem("turra_bookings")) {
-                appState.registeredBookings = JSON.parse(localStorage.getItem("turra_bookings"));
-            }
-
-            // 5. Footer info Loading
-            const storedFooterHours = localStorage.getItem("turra_custom_footer_hours");
-            if (storedFooterHours !== null) {
-                appState.footerHours = storedFooterHours;
-            }
-
-            const storedFooterAddress = localStorage.getItem("turra_custom_footer_address");
-            if (storedFooterAddress !== null) {
-                appState.footerAddress = storedFooterAddress;
-            }
-
-            // 6. Cancellation Policy Loading
-            const storedPolicy = localStorage.getItem("turra_custom_cancellation_policy");
-            if (storedPolicy !== null) {
-                appState.cancellationPolicy = storedPolicy;
-            }
-
-            // 7. Social Links Loading
-            const storedInstagram = localStorage.getItem("turra_custom_instagram");
-            if (storedInstagram !== null) {
-                appState.instagramLink = storedInstagram;
-            }
-
-            const storedFacebook = localStorage.getItem("turra_custom_facebook");
-            if (storedFacebook !== null) {
-                appState.facebookLink = storedFacebook;
-            }
-
-            const storedWhatsappNum = localStorage.getItem("turra_custom_whatsapp_num");
-            if (storedWhatsappNum !== null) {
-                appState.whatsappNumber = storedWhatsappNum;
+        // Save Config doc to Cloud Firestore
+        async function saveConfigToFirebase() {
+            if (!authUser) return;
+            const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config');
+            try {
+                await setDoc(configDocRef, {
+                    services: appState.services,
+                    timeSlots: appState.timeSlots,
+                    profilePic: appState.profilePic,
+                    logo: appState.logo,
+                    footerHours: appState.footerHours,
+                    footerAddress: appState.footerAddress,
+                    cancellationPolicy: appState.cancellationPolicy,
+                    instagramLink: appState.instagramLink,
+                    facebookLink: appState.facebookLink,
+                    whatsappNumber: appState.whatsappNumber
+                });
+            } catch (err) {
+                console.error("Error saving doc config:", err);
             }
         }
 
-        // Apply updated image assets throughout layout
+        // Save State locally for offline capability
+        function saveStateToLocalStorage() {
+            localStorage.setItem("turra_custom_services", JSON.stringify(appState.services));
+            localStorage.setItem("turra_custom_slots", JSON.stringify(appState.timeSlots));
+            localStorage.setItem("turra_custom_profile_pic", appState.profilePic);
+            localStorage.setItem("turra_custom_logo", appState.logo);
+            localStorage.setItem("turra_custom_footer_hours", appState.footerHours);
+            localStorage.setItem("turra_custom_footer_address", appState.footerAddress);
+            localStorage.setItem("turra_custom_cancellation_policy", appState.cancellationPolicy);
+            localStorage.setItem("turra_custom_instagram", appState.instagramLink);
+            localStorage.setItem("turra_custom_facebook", appState.facebookLink);
+            localStorage.setItem("turra_custom_whatsapp_num", appState.whatsappNumber);
+        }
+
+        // Fallback loader if offline or permission denied
+        function loadStateFromStorage() {
+            const stServ = localStorage.getItem("turra_custom_services");
+            if (stServ) appState.services = JSON.parse(stServ);
+            const stSlots = localStorage.getItem("turra_custom_slots");
+            if (stSlots) appState.timeSlots = JSON.parse(stSlots);
+            const stProf = localStorage.getItem("turra_custom_profile_pic");
+            if (stProf) appState.profilePic = stProf;
+            const stLogo = localStorage.getItem("turra_custom_logo");
+            if (stLogo) appState.logo = stLogo;
+            const stHours = localStorage.getItem("turra_custom_footer_hours");
+            if (stHours) appState.footerHours = stHours;
+            const stAddress = localStorage.getItem("turra_custom_footer_address");
+            if (stAddress) appState.footerAddress = stAddress;
+            const stPolicy = localStorage.getItem("turra_custom_cancellation_policy");
+            if (stPolicy) appState.cancellationPolicy = stPolicy;
+            const stInsta = localStorage.getItem("turra_custom_instagram");
+            if (stInsta) appState.instagramLink = stInsta;
+            const stFb = localStorage.getItem("turra_custom_facebook");
+            if (stFb) appState.facebookLink = stFb;
+            const stWA = localStorage.getItem("turra_custom_whatsapp_num");
+            if (stWA) appState.whatsappNumber = stWA;
+        }
+
+        function renderAll() {
+            updateFrontendImages();
+            updateFooterDisplay();
+            updatePolicyDisplay();
+            renderServicesCatalog();
+            renderSelectedServicesList();
+            updateLocalStorageDashboard();
+            renderCalendar();
+        }
+
         function updateFrontendImages() {
-            // Profile Pictures
             const profileDisplay = document.getElementById('display-profile-pic');
             if (profileDisplay) profileDisplay.src = appState.profilePic;
             
             const adminProfilePreview = document.getElementById('admin-preview-profile-pic');
             if (adminProfilePreview) adminProfilePreview.src = appState.profilePic;
             
-            // Logos
             const headerLogo = document.getElementById('header-logo-img');
             if (headerLogo) headerLogo.src = appState.logo;
             
@@ -920,7 +1007,6 @@
             if (adminLogoPreview) adminLogoPreview.src = appState.logo;
         }
 
-        // Update operational footer contact elements and social links
         function updateFooterDisplay() {
             const hoursDisplay = document.getElementById('footer-hours-display');
             if (hoursDisplay) {
@@ -932,32 +1018,21 @@
                 addressDisplay.innerHTML = `<i class="fa-solid fa-location-dot text-brand-gold mr-2"></i> ${appState.footerAddress}`;
             }
 
-            // Dynamic Social Media Links targeting icons
             const instaLink = document.getElementById('footer-instagram');
-            if (instaLink) {
-                instaLink.href = appState.instagramLink || '#';
-            }
+            if (instaLink) instaLink.href = appState.instagramLink || '#';
 
             const fbLink = document.getElementById('footer-facebook');
-            if (fbLink) {
-                fbLink.href = appState.facebookLink || '#';
-            }
+            if (fbLink) fbLink.href = appState.facebookLink || '#';
 
             const waLink = document.getElementById('footer-whatsapp');
-            if (waLink) {
-                waLink.href = `https://wa.me/${appState.whatsappNumber}`;
-            }
+            if (waLink) waLink.href = `https://wa.me/${appState.whatsappNumber}`;
         }
 
-        // Update policy display under calendar section
         function updatePolicyDisplay() {
             const policyText = document.getElementById('policy-display-text');
-            if (policyText) {
-                policyText.textContent = appState.cancellationPolicy;
-            }
+            if (policyText) policyText.textContent = appState.cancellationPolicy;
         }
 
-        // Custom Toast system
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -981,26 +1056,23 @@
             }, 4000);
         }
 
-        // Toggle mobile hamburger menu drawer
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
+            if (menu) menu.classList.toggle('hidden');
         }
 
-        document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
-
-        // Toggle FAQ Accordions
         function toggleFAQ(button) {
             const answer = button.nextElementSibling;
             const icon = button.querySelector('i');
-            
-            answer.classList.toggle('hidden');
-            icon.classList.toggle('rotate-180');
+            if (answer && icon) {
+                answer.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            }
         }
 
-        // Dynamic Services Grid Render on home section
         function renderServicesCatalog() {
             const gridContainer = document.getElementById('services-grid');
+            if (!gridContainer) return;
             gridContainer.innerHTML = '';
 
             Object.keys(appState.services).forEach(id => {
@@ -1016,7 +1088,7 @@
                                 </span>
                                 <div class="text-right">
                                     <span class="block text-xs uppercase tracking-widest text-brand-slate">Preço</span>
-                                    <span class="font-turra-serif text-xl font-bold text-brand-dark">R$ ${item.price.toFixed(2)}</span>
+                                    <span class="font-turra-serif text-xl font-bold text-brand-dark">R$ ${Number(item.price).toFixed(2)}</span>
                                 </div>
                             </div>
                             <h3 class="font-turra-serif text-xl font-semibold text-brand-dark mb-2">${item.name}</h3>
@@ -1034,12 +1106,11 @@
             });
         }
 
-        // Helper icon assigner based on index / key
         function getServiceIcon(id) {
             const icons = {
                 "1": "fa-solid fa-wand-magic-sparkles",
                 "2": "fa-solid fa-rotate",
-                "3": "fa-solid fa-shield",
+                "3": "fa-solid fa-shadow-card",
                 "4": "fa-solid fa-bottle-droplet",
                 "5": "fa-solid fa-palette",
                 "6": "fa-solid fa-hand"
@@ -1047,10 +1118,8 @@
             return icons[id] || "fa-solid fa-sparkles";
         }
 
-        // Add/Remove Services Selected
         function toggleServiceSelection(serviceId) {
             const index = appState.selectedServices.indexOf(serviceId);
-
             if (index === -1) {
                 appState.selectedServices.push(serviceId);
                 showToast(`Serviço "${appState.services[serviceId].name}" selecionado!`);
@@ -1058,16 +1127,15 @@
                 appState.selectedServices.splice(index, 1);
                 showToast(`Removido: "${appState.services[serviceId].name}"`);
             }
-
             renderServicesCatalog();
             renderSelectedServicesList();
         }
 
-        // Render selected items under Checkout step
         function renderSelectedServicesList() {
             const listContainer = document.getElementById('selected-services-list');
             const totalCard = document.getElementById('checkout-total-card');
             const totalPriceEl = document.getElementById('checkout-total-price');
+            if (!listContainer) return;
             
             if (appState.selectedServices.length === 0) {
                 listContainer.innerHTML = `
@@ -1078,17 +1146,17 @@
                         <a href="#servicos" class="inline-block mt-4 text-xs font-semibold uppercase tracking-wider bg-brand-dark text-brand-light px-4 py-2 rounded-lg hover:bg-brand-accent transition-colors">Ver Catálogo de Serviços</a>
                     </div>
                 `;
-                totalCard.classList.add('hidden');
+                if (totalCard) totalCard.classList.add('hidden');
                 return;
             }
 
-            totalCard.classList.remove('hidden');
+            if (totalCard) totalCard.classList.remove('hidden');
             let total = 0;
             let htmlContent = `<div class="space-y-2">`;
 
             appState.selectedServices.forEach(id => {
                 const item = appState.services[id];
-                total += item.price;
+                total += Number(item.price);
                 htmlContent += `
                     <div class="flex justify-between items-center bg-brand-light/70 p-4 rounded-xl border border-brand-cream/60">
                         <div class="flex items-center space-x-3">
@@ -1099,7 +1167,7 @@
                             </div>
                         </div>
                         <div class="flex items-center space-x-4">
-                            <span class="font-semibold text-sm text-brand-dark">R$ ${item.price.toFixed(2)}</span>
+                            <span class="font-semibold text-sm text-brand-dark">R$ ${Number(item.price).toFixed(2)}</span>
                             <button onclick="toggleServiceSelection('${id}')" class="text-xs text-red-500 hover:text-red-700 p-1" title="Remover"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </div>
@@ -1108,51 +1176,51 @@
 
             htmlContent += `</div>`;
             listContainer.innerHTML = htmlContent;
-            totalPriceEl.textContent = `R$ ${total.toFixed(2)}`;
+            if (totalPriceEl) totalPriceEl.textContent = `R$ ${total.toFixed(2)}`;
             
-            // Sync current state text summaries as well
-            document.getElementById('summary-total').textContent = `R$ ${total.toFixed(2)}`;
+            const sumTotal = document.getElementById('summary-total');
+            if (sumTotal) sumTotal.textContent = `R$ ${total.toFixed(2)}`;
         }
 
-        // Navigation Steps handler
         function goToStep(step) {
-            // Hide all sections
-            document.getElementById('step-section-1').classList.add('hidden');
-            document.getElementById('step-section-2').classList.add('hidden');
-            document.getElementById('step-section-3').classList.add('hidden');
+            const step1 = document.getElementById('step-section-1');
+            const step2 = document.getElementById('step-section-2');
+            const step3 = document.getElementById('step-section-3');
+            if (step1) step1.classList.add('hidden');
+            if (step2) step2.classList.add('hidden');
+            if (step3) step3.classList.add('hidden');
 
-            // Reset step indicators visually
-            for(let i=1; i<=3; i++) {
+            for (let i = 1; i <= 3; i++) {
                 const indicator = document.getElementById(`step-${i}-indicator`);
-                indicator.className = "w-10 h-10 rounded-full bg-brand-cream text-brand-slate flex items-center justify-center font-semibold text-sm transition-all";
-            }
-
-            // Highlighting steps sequentially
-            for(let i=1; i<=step; i++) {
-                const ind = document.getElementById(`step-${i}-indicator`);
-                if(i === step) {
-                    ind.className = "w-10 h-10 rounded-full bg-brand-dark text-brand-light flex items-center justify-center font-semibold text-sm transition-all shadow-md ring-2 ring-brand-gold/30";
-                } else {
-                    ind.className = "w-10 h-10 rounded-full bg-brand-gold text-brand-dark flex items-center justify-center font-semibold text-sm transition-all";
+                if (indicator) {
+                    indicator.className = "w-10 h-10 rounded-full bg-brand-cream text-brand-slate flex items-center justify-center font-semibold text-sm transition-all";
                 }
             }
 
-            // Connecting lines highlights
-            if(step >= 2) document.getElementById('line-step-1').className = "h-[2px] bg-brand-gold flex-1 -mt-5 transition-all";
-            else document.getElementById('line-step-1').className = "h-[2px] bg-brand-cream flex-1 -mt-5 transition-all";
+            for (let i = 1; i <= step; i++) {
+                const ind = document.getElementById(`step-${i}-indicator`);
+                if (ind) {
+                    if (i === step) {
+                        ind.className = "w-10 h-10 rounded-full bg-brand-dark text-brand-light flex items-center justify-center font-semibold text-sm transition-all shadow-md ring-2 ring-brand-gold/30";
+                    } else {
+                        ind.className = "w-10 h-10 rounded-full bg-brand-gold text-brand-dark flex items-center justify-center font-semibold text-sm transition-all";
+                    }
+                }
+            }
 
-            if(step >= 3) document.getElementById('line-step-2').className = "h-[2px] bg-brand-gold flex-1 -mt-5 transition-all";
-            else document.getElementById('line-step-2').className = "h-[2px] bg-brand-cream flex-1 -mt-5 transition-all";
+            const line1 = document.getElementById('line-step-1');
+            const line2 = document.getElementById('line-step-2');
+            if (line1) line1.className = step >= 2 ? "h-[2px] bg-brand-gold flex-1 -mt-5 transition-all" : "h-[2px] bg-brand-cream flex-1 -mt-5 transition-all";
+            if (line2) line2.className = step >= 3 ? "h-[2px] bg-brand-gold flex-1 -mt-5 transition-all" : "h-[2px] bg-brand-cream flex-1 -mt-5 transition-all";
 
-            // Reveal correct section
-            document.getElementById(`step-section-${step}`).classList.remove('hidden');
+            const activeSection = document.getElementById(`step-section-${step}`);
+            if (activeSection) activeSection.classList.remove('hidden');
             appState.currentStep = step;
             
-            // Scroll to booking start
-            document.getElementById('agendamento').scrollIntoView({ behavior: 'smooth' });
+            const bookingSec = document.getElementById('agendamento');
+            if (bookingSec) bookingSec.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Month Names Portuguese
         const monthNames = [
             "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
             "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
@@ -1161,6 +1229,7 @@
         function renderCalendar() {
             const calendarDays = document.getElementById('calendar-days');
             const monthYearText = document.getElementById('calendar-month-year');
+            if (!calendarDays || !monthYearText) return;
             
             calendarDays.innerHTML = '';
             monthYearText.textContent = `${monthNames[appState.calendarMonth]} ${appState.calendarYear}`;
@@ -1168,13 +1237,11 @@
             const firstDayIndex = new Date(appState.calendarYear, appState.calendarMonth, 1).getDay();
             const lastDay = new Date(appState.calendarYear, appState.calendarMonth + 1, 0).getDate();
 
-            // Append empty spacer boxes before first calendar day
             for (let i = 0; i < firstDayIndex; i++) {
                 const emptyCell = document.createElement('div');
                 calendarDays.appendChild(emptyCell);
             }
 
-            // Append each day cell
             for (let day = 1; day <= lastDay; day++) {
                 const dayDate = new Date(appState.calendarYear, appState.calendarMonth, day);
                 const dayOfWeek = dayDate.getDay();
@@ -1184,20 +1251,17 @@
                 dayButton.textContent = day;
                 dayButton.className = "w-full py-2.5 text-xs font-semibold rounded-lg flex items-center justify-center transition-all ";
                 
-                // Current timestamp baseline
                 const today = new Date();
                 today.setHours(0,0,0,0);
                 dayDate.setHours(0,0,0,0);
 
-                // Disable past dates, Sunday (0) and Monday (1)
                 const isPast = dayDate < today;
-                const isOffDay = dayOfWeek === 0 || dayOfWeek === 1;
+                const isOffDay = dayOfWeek === 0 || dayOfWeek === 1; // Dom e Seg fechados
 
                 if (isPast || isOffDay) {
                     dayButton.disabled = true;
                     dayButton.className += "text-gray-300 bg-transparent cursor-not-allowed";
                 } else {
-                    // Check if selected currently
                     const isSelected = appState.selectedDate && 
                         appState.selectedDate.getDate() === day && 
                         appState.selectedDate.getMonth() === appState.calendarMonth && 
@@ -1213,15 +1277,12 @@
                         selectBookingDate(new Date(appState.calendarYear, appState.calendarMonth, day));
                     });
                 }
-
                 calendarDays.appendChild(dayButton);
             }
         }
 
-        // Calendar Month controls
         function prevMonth() {
             const today = new Date();
-            // Restrict from going behind current month
             if (appState.calendarYear === today.getFullYear() && appState.calendarMonth <= today.getMonth()) {
                 showToast("Não é possível retroceder para meses passados.", "error");
                 return;
@@ -1245,23 +1306,22 @@
             renderCalendar();
         }
 
-        // Date selection event handler
         function selectBookingDate(date) {
             appState.selectedDate = date;
-            appState.selectedTimeSlot = null; // Reset time when date changes
+            appState.selectedTimeSlot = null;
             
-            // Format for preview
             const dayStr = date.getDate().toString().padStart(2, '0');
             const monthStr = monthNames[date.getMonth()];
-            document.getElementById('selected-date-preview').textContent = `Dia Escolhido: ${dayStr} de ${monthStr}`;
+            const preview = document.getElementById('selected-date-preview');
+            if (preview) preview.textContent = `Dia Escolhido: ${dayStr} de ${monthStr}`;
 
             renderCalendar();
             renderTimeSlots();
         }
 
-        // Render Time Slots dynamically with collision prevention
         function renderTimeSlots() {
             const container = document.getElementById('time-slots-grid');
+            if (!container) return;
             container.innerHTML = '';
 
             if (!appState.selectedDate) {
@@ -1273,12 +1333,11 @@
             const monthStr = (appState.selectedDate.getMonth() + 1).toString().padStart(2, '0');
             const dateFormatted = `${dayStr}/${monthStr}/${appState.selectedDate.getFullYear()}`;
 
-            // Render Slots using configuration state
             appState.timeSlots.forEach(time => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 
-                // Collision Prevention Engine: Match formatted date string AND slot hour
+                // Block conflicts based on cloud bookings list
                 const isBooked = appState.registeredBookings.some(b => b.date === dateFormatted && b.time === time);
                 const isSelected = appState.selectedTimeSlot === time;
                 
@@ -1301,12 +1360,10 @@
                         showToast(`Horário escolhido: ${time}!`);
                     });
                 }
-
                 container.appendChild(btn);
             });
         }
 
-        // Validate selection step 2 and go next
         function validateStep2AndProceed() {
             if (!appState.selectedDate) {
                 showToast("Por favor, selecione uma data válida no calendário.", "error");
@@ -1317,22 +1374,27 @@
                 return;
             }
 
-            // Render final Checkout Info
             const selectedServicesNames = appState.selectedServices.map(id => appState.services[id].name).join(", ");
-            document.getElementById('summary-services-list').textContent = selectedServicesNames;
-            document.getElementById('summary-services-list').title = selectedServicesNames;
+            const listSum = document.getElementById('summary-services-list');
+            if (listSum) {
+                listSum.textContent = selectedServicesNames;
+                listSum.title = selectedServicesNames;
+            }
 
             const dayStr = appState.selectedDate.getDate().toString().padStart(2, '0');
             const monthStr = (appState.selectedDate.getMonth() + 1).toString().padStart(2, '0');
             const yearStr = appState.selectedDate.getFullYear();
             
-            document.getElementById('summary-date').textContent = `${dayStr}/${monthStr}/${yearStr}`;
-            document.getElementById('summary-time').textContent = appState.selectedTimeSlot;
+            const dateSum = document.getElementById('summary-date');
+            if (dateSum) dateSum.textContent = `${dayStr}/${monthStr}/${yearStr}`;
+            
+            const timeSum = document.getElementById('summary-time');
+            if (timeSum) timeSum.textContent = appState.selectedTimeSlot;
 
             goToStep(3);
         }
 
-        function handleBookingSubmit(event) {
+        async function handleBookingSubmit(event) {
             event.preventDefault();
 
             const clientName = document.getElementById('client-name').value.trim();
@@ -1344,10 +1406,9 @@
                 return;
             }
 
-            // Calculation data
             let totalCost = 0;
             const servicesSelectedObj = appState.selectedServices.map(id => {
-                totalCost += appState.services[id].price;
+                totalCost += Number(appState.services[id].price);
                 return appState.services[id].name;
             });
 
@@ -1355,98 +1416,109 @@
             const monthStr = (appState.selectedDate.getMonth() + 1).toString().padStart(2, '0');
             const dateFormatted = `${dayStr}/${monthStr}/${appState.selectedDate.getFullYear()}`;
 
-            // Create appointment unique ID
+            const bookingId = Date.now();
             const newBooking = {
-                id: Date.now(),
+                id: bookingId,
                 clientName: clientName,
                 clientPhone: clientPhone,
                 services: servicesSelectedObj,
                 date: dateFormatted,
                 time: appState.selectedTimeSlot,
                 notes: clientNotes,
-                total: totalCost
+                total: totalCost,
+                createdAt: Date.now()
             };
 
-            // Save in current session memory & localStorage
-            appState.registeredBookings.unshift(newBooking);
-            localStorage.setItem("turra_bookings", JSON.stringify(appState.registeredBookings));
+            // 1. Save to Cloud Firestore
+            if (authUser) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'bookings', String(bookingId));
+                    await setDoc(docRef, newBooking);
+                } catch (e) {
+                    console.error("Firestore booking submit error (Using Local Fallback):", e);
+                }
+            }
 
-            // Generate beautifully structured WhatsApp text
+            // Fallback backup locally
+            const localSess = JSON.parse(localStorage.getItem("turra_bookings") || "[]");
+            localSess.unshift(newBooking);
+            localStorage.setItem("turra_bookings", JSON.stringify(localSess));
+
+            // Generate beautifully structured WhatsApp message
             let textMessage = `Olá TURRA nails design! Gostaria de confirmar meu agendamento:\n\n`;
             textMessage += `💅 *Cliente:* ${clientName}\n`;
             textMessage += `📞 *WhatsApp:* ${clientPhone}\n`;
             textMessage += `🗓️ *Data:* ${dateFormatted}\n`;
             textMessage += `⏰ *Horário:* ${appState.selectedTimeSlot}\n\n`;
             textMessage += `*Serviços Escolhidos:*\n`;
-            
             servicesSelectedObj.forEach((srv) => {
                 textMessage += `- ${srv}\n`;
             });
-            
             textMessage += `\n💰 *Total Estimado:* R$ ${totalCost.toFixed(2)}\n`;
-            
             if (clientNotes) {
                 textMessage += `📝 *Nota:* ${clientNotes}\n`;
             }
-            
             textMessage += `\n_Enviado através do site de agendamentos._`;
 
-            // WhatsApp Target Phone configured via Admin Panel (or default fallback)
             const whatsappNumber = appState.whatsappNumber || "5516996269345"; 
             const encodedText = encodeURIComponent(textMessage);
             const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedText}`;
 
-            // Fire Success Visual Screen / Redirect
             showToast("Agendamento efetuado com sucesso! Redirecionando...", "success");
 
-            // Open WhatsApp
             setTimeout(() => {
                 window.open(whatsappUrl, '_blank');
             }, 1000);
 
-            // Reset selection state
+            // Clean step form state
             appState.selectedServices = [];
             appState.selectedDate = null;
             appState.selectedTimeSlot = null;
 
-            // Update local dashboard representation
             updateLocalStorageDashboard();
             renderServicesCatalog();
 
-            // Clear inputs
             document.getElementById('client-name').value = '';
             document.getElementById('client-phone').value = '';
             document.getElementById('client-notes').value = '';
 
-            // Return to step 1
             renderSelectedServicesList();
             goToStep(1);
         }
 
-        // Cancel / Delete local booking session & notify designer via WhatsApp
-        function cancelLocalBooking(id) {
-            const bookingToCancel = appState.registeredBookings.find(b => b.id === id);
+        async function cancelLocalBooking(id) {
+            const bookingToCancel = appState.registeredBookings.find(b => String(b.id) === String(id));
             if (!bookingToCancel) return;
 
-            // Generate beautifully structured cancellation text
+            // Delete in Firebase Cloud Store
+            if (authUser) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'bookings', String(id));
+                    await deleteDoc(docRef);
+                } catch (e) {
+                    console.error("Firestore cancel error:", e);
+                }
+            }
+
+            // Delete in local storage list backup
+            let localSess = JSON.parse(localStorage.getItem("turra_bookings") || "[]");
+            localSess = localSess.filter(b => String(b.id) !== String(id));
+            localStorage.setItem("turra_bookings", JSON.stringify(localSess));
+
+            // Generate WhatsApp warning text
             let textMessage = `Olá TURRA nails design! Gostaria de *DESMARCAR* meu agendamento:\n\n`;
             textMessage += `❌ *SOLICITAÇÃO DE CANCELAMENTO*\n\n`;
             textMessage += `💅 *Cliente:* ${bookingToCancel.clientName}\n`;
             textMessage += `🗓️ *Data:* ${bookingToCancel.date}\n`;
             textMessage += `⏰ *Horário:* ${bookingToCancel.time}\n`;
             textMessage += `✂️ *Procedimentos:* ${bookingToCancel.services.join(", ")}\n`;
-            textMessage += `💰 *Valor:* R$ ${bookingToCancel.total.toFixed(2)}\n\n`;
+            textMessage += `💰 *Valor:* R$ ${Number(bookingToCancel.total).toFixed(2)}\n\n`;
             textMessage += `_Política:_ ${appState.cancellationPolicy}`;
 
             const whatsappNumber = appState.whatsappNumber || "5516996269345";
             const encodedText = encodeURIComponent(textMessage);
             const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedText}`;
 
-            // Remove from state & localStorage
-            appState.registeredBookings = appState.registeredBookings.filter(b => b.id !== id);
-            localStorage.setItem("turra_bookings", JSON.stringify(appState.registeredBookings));
-            
-            // Refresh Dashboard UI and Slot mappings
             updateLocalStorageDashboard();
             if (appState.selectedDate) {
                 renderTimeSlots();
@@ -1454,21 +1526,23 @@
 
             showToast("Desmarcando... Abrindo o WhatsApp para enviar a notificação.", "success");
 
-            // Redirect to WhatsApp
             setTimeout(() => {
                 window.open(whatsappUrl, '_blank');
             }, 1200);
         }
 
-        // Local Dashboard updater
         function updateLocalStorageDashboard() {
             const container = document.getElementById('local-appointments-container');
+            if (!container) return;
             
-            if (appState.registeredBookings.length === 0) {
+            // Get local bookings (from backup or synced state)
+            const list = appState.registeredBookings;
+            
+            if (list.length === 0) {
                 container.innerHTML = `
                     <div class="text-center py-10 bg-brand-light/30 border border-brand-cream/60 rounded-3xl">
                         <i class="fa-regular fa-calendar text-4xl text-brand-slate/40 mb-3 block"></i>
-                        <p class="text-sm font-medium text-brand-dark">Você não possui agendamentos salvos neste navegador.</p>
+                        <p class="text-sm font-medium text-brand-dark">Você não possui agendamentos ativos na nuvem.</p>
                         <p class="text-xs text-brand-slate/70 mt-1">Realize seu primeiro agendamento usando nosso assistente.</p>
                     </div>
                 `;
@@ -1477,12 +1551,12 @@
 
             let htmlContent = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">`;
 
-            appState.registeredBookings.forEach(booking => {
+            list.forEach(booking => {
                 htmlContent += `
                     <div class="bg-brand-light/40 border border-brand-cream rounded-2xl p-5 space-y-3 relative hover:shadow-gold-sm transition-all">
                         <div class="flex justify-between items-start">
                             <div>
-                                <span class="text-[10px] uppercase font-bold tracking-wider text-brand-accent px-2 py-1 bg-brand-glow border border-brand-gold/20 rounded-md">Status: Aguardando Confirmação</span>
+                                <span class="text-[10px] uppercase font-bold tracking-wider text-brand-accent px-2 py-1 bg-brand-glow border border-brand-gold/20 rounded-md">Agendado</span>
                                 <h4 class="font-turra-serif text-lg font-bold text-brand-dark mt-2">${booking.clientName}</h4>
                             </div>
                             <button onclick="cancelLocalBooking(${booking.id})" class="text-xs text-red-500 hover:text-red-700 font-medium px-2 py-1 rounded bg-white hover:bg-red-50 transition-colors border border-red-200">
@@ -1493,7 +1567,7 @@
                         <div class="text-xs text-brand-slate space-y-1">
                             <p><i class="fa-regular fa-calendar-check text-brand-gold"></i> <strong class="text-brand-dark">Data:</strong> ${booking.date} às ${booking.time}</p>
                             <p class="truncate"><i class="fa-solid fa-scissors text-brand-gold"></i> <strong class="text-brand-dark">Procedimentos:</strong> ${booking.services.join(", ")}</p>
-                            <p><i class="fa-solid fa-calculator text-brand-gold"></i> <strong class="text-brand-dark">Valor Estimado:</strong> R$ ${booking.total.toFixed(2)}</p>
+                            <p><i class="fa-solid fa-calculator text-brand-gold"></i> <strong class="text-brand-dark">Valor Estimado:</strong> R$ ${Number(booking.total).toFixed(2)}</p>
                         </div>
                     </div>
                 `;
@@ -1503,19 +1577,22 @@
             container.innerHTML = htmlContent;
         }
 
-        // Admin LOGIN/VALIDATION Functions
         function openAdminLogin() {
-            document.getElementById('admin-login-modal').classList.remove('hidden');
-            document.getElementById('admin-passcode').focus();
+            const modal = document.getElementById('admin-login-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                const passcode = document.getElementById('admin-passcode');
+                if (passcode) passcode.focus();
+            }
         }
 
-        // Close passcode screen
         function closeAdminLogin() {
-            document.getElementById('admin-login-modal').classList.add('hidden');
-            document.getElementById('admin-passcode').value = '';
+            const modal = document.getElementById('admin-login-modal');
+            if (modal) modal.classList.add('hidden');
+            const passcode = document.getElementById('admin-passcode');
+            if (passcode) passcode.value = '';
         }
 
-        // Validate secret passcode
         function validateAdminLogin() {
             const code = document.getElementById('admin-passcode').value.trim();
             if (code === 'turra2026') {
@@ -1527,37 +1604,39 @@
             }
         }
 
-        // Open Professional Configuration Panel
         function openAdminPanel() {
-            document.getElementById('admin-panel').classList.remove('hidden');
-            renderAdminServicesList();
-            renderAdminHoursGrid();
+            const panel = document.getElementById('admin-panel');
+            if (panel) {
+                panel.classList.remove('hidden');
+                renderAdminServicesList();
+                renderAdminHoursGrid();
 
-            // Populate Admin Details inputs
-            document.getElementById('admin-footer-hours').value = appState.footerHours;
-            document.getElementById('admin-footer-address').value = appState.footerAddress;
-            document.getElementById('admin-cancellation-policy').value = appState.cancellationPolicy;
+                document.getElementById('admin-footer-hours').value = appState.footerHours;
+                document.getElementById('admin-footer-address').value = appState.footerAddress;
+                document.getElementById('admin-cancellation-policy').value = appState.cancellationPolicy;
 
-            // Populate Social links in Admin Panel inputs
-            document.getElementById('admin-social-instagram').value = appState.instagramLink || '';
-            document.getElementById('admin-social-facebook').value = appState.facebookLink || '';
-            document.getElementById('admin-social-whatsapp').value = appState.whatsappNumber || '';
+                document.getElementById('admin-social-instagram').value = appState.instagramLink || '';
+                document.getElementById('admin-social-facebook').value = appState.facebookLink || '';
+                document.getElementById('admin-social-whatsapp').value = appState.whatsappNumber || '';
+            }
         }
 
-        // Save & Exit Admin Panel
         function closeAdminPanel() {
-            document.getElementById('admin-panel').classList.add('hidden');
+            const panel = document.getElementById('admin-panel');
+            if (panel) panel.classList.add('hidden');
             
-            // Re-render core layout reflecting edits
+            // Push changes to Google Cloud Firestore instantly
+            saveConfigToFirebase();
+
             renderServicesCatalog();
             renderSelectedServicesList();
             renderTimeSlots();
             showToast("Alterações aplicadas com sucesso!");
         }
 
-        // Render editable services list inside the Admin Panel
         function renderAdminServicesList() {
             const list = document.getElementById('admin-services-list');
+            if (!list) return;
             list.innerHTML = '';
 
             Object.keys(appState.services).forEach(id => {
@@ -1582,20 +1661,17 @@
             });
         }
 
-        // Handle single inputs changes inside services lists
         function updateAdminServiceField(id, field, value) {
             if (field === 'price' || field === 'duration') {
                 appState.services[id][field] = parseFloat(value) || 0;
             } else {
                 appState.services[id][field] = value;
             }
-            // Persist
-            localStorage.setItem("turra_custom_services", JSON.stringify(appState.services));
         }
 
-        // Render current operational hour blocks in settings
         function renderAdminHoursGrid() {
             const grid = document.getElementById('admin-hours-grid');
+            if (!grid) return;
             grid.innerHTML = '';
 
             appState.timeSlots.sort().forEach(slot => {
@@ -1611,7 +1687,6 @@
             });
         }
 
-        // Add hour slot dynamically
         function addNewHourSlot() {
             const input = document.getElementById('admin-new-hour-input');
             const val = input.value.trim();
@@ -1628,53 +1703,39 @@
 
             appState.timeSlots.push(val);
             appState.timeSlots.sort();
-            localStorage.setItem("turra_custom_slots", JSON.stringify(appState.timeSlots));
             
             renderAdminHoursGrid();
             input.value = '';
             showToast("Novo horário adicionado!");
         }
 
-        // Remove hour slot dynamically
         function removeHourSlot(slot) {
             appState.timeSlots = appState.timeSlots.filter(t => t !== slot);
-            localStorage.setItem("turra_custom_slots", JSON.stringify(appState.timeSlots));
             renderAdminHoursGrid();
             showToast(`Horário ${slot} removido.`);
         }
 
-        // Update operational text blocks and persist
         function updateFooterInfo(field, value) {
             appState[field] = value;
             if (field === 'footerHours') {
-                localStorage.setItem("turra_custom_footer_hours", value);
                 updateFooterDisplay();
             } else if (field === 'footerAddress') {
-                localStorage.setItem("turra_custom_footer_address", value);
                 updateFooterDisplay();
             } else if (field === 'cancellationPolicy') {
-                localStorage.setItem("turra_custom_cancellation_policy", value);
                 updatePolicyDisplay();
             }
         }
 
-        // Update social links from admin inputs
         function updateSocialLink(field, value) {
-            appState[field] = value;
-            if (field === 'instagramLink') {
-                localStorage.setItem("turra_custom_instagram", value);
-            } else if (field === 'facebookLink') {
-                localStorage.setItem("turra_custom_facebook", value);
-            } else if (field === 'whatsappNumber') {
-                // Clean non-digits from WhatsApp input for safe redirection target APIs
+            if (field === 'whatsappNumber') {
                 const cleanNum = value.replace(/\D/g, '');
                 appState.whatsappNumber = cleanNum;
-                localStorage.setItem("turra_custom_whatsapp_num", cleanNum);
+            } else {
+                appState[field] = value;
             }
             updateFooterDisplay();
         }
 
-        // Handle custom profile picture local storage save and load
         function handleProfilePicUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1683,23 +1744,18 @@
             reader.onload = function(e) {
                 const base64Pic = e.target.result;
                 appState.profilePic = base64Pic;
-                localStorage.setItem("turra_custom_profile_pic", base64Pic);
-                
                 updateFrontendImages();
                 showToast("Foto de perfil alterada com sucesso!");
             };
             reader.readAsDataURL(file);
         }
 
-        // Restore Default Banner Picture settings
         function resetProfilePic() {
             appState.profilePic = "WhatsApp Image 2026-07-07 at 23.22.44.jpeg";
-            localStorage.removeItem("turra_custom_profile_pic");
             updateFrontendImages();
             showToast("Foto restaurada para a original.");
         }
 
-        // Handle custom logo local storage save and load
         function handleLogoUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1708,21 +1764,42 @@
             reader.onload = function(e) {
                 const base64Logo = e.target.result;
                 appState.logo = base64Logo;
-                localStorage.setItem("turra_custom_logo", base64Logo);
-                
                 updateFrontendImages();
                 showToast("Logo do site alterada com sucesso!");
             };
             reader.readAsDataURL(file);
         }
 
-        // Restore Default Logo Picture settings
         function resetLogo() {
             appState.logo = "WhatsApp Image 2026-07-07 at 23.22.44.jpeg";
-            localStorage.removeItem("turra_custom_logo");
             updateFrontendImages();
             showToast("Logo restaurada para a original.");
         }
+
+        // Global functions map binder
+        window.toggleMobileMenu = toggleMobileMenu;
+        window.toggleFAQ = toggleFAQ;
+        window.toggleServiceSelection = toggleServiceSelection;
+        window.goToStep = goToStep;
+        window.prevMonth = prevMonth;
+        window.nextMonth = nextMonth;
+        window.validateStep2AndProceed = validateStep2AndProceed;
+        window.handleBookingSubmit = handleBookingSubmit;
+        window.cancelLocalBooking = cancelLocalBooking;
+        window.openAdminLogin = openAdminLogin;
+        window.closeAdminLogin = closeAdminLogin;
+        window.validateAdminLogin = validateAdminLogin;
+        window.openAdminPanel = openAdminPanel;
+        window.closeAdminPanel = closeAdminPanel;
+        window.updateAdminServiceField = updateAdminServiceField;
+        window.addNewHourSlot = addNewHourSlot;
+        window.removeHourSlot = removeHourSlot;
+        window.updateFooterInfo = updateFooterInfo;
+        window.updateSocialLink = updateSocialLink;
+        window.handleProfilePicUpload = handleProfilePicUpload;
+        window.resetProfilePic = resetProfilePic;
+        window.handleLogoUpload = handleLogoUpload;
+        window.resetLogo = resetLogo;
     </script>
 </body>
 </html>
